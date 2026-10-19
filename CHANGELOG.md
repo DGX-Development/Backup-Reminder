@@ -1,11 +1,8 @@
 # Changelog
 
-## Unreleased
-
-- Show Developer Website in About, with DGX.digitalguy.me linking to the main developer website.
-
 ## 0.2.1 - 2026-10-18
 
+- Show Developer Website in About, with DGX.digitalguy.me linking to the main developer website.
 - Give every Browse dialog an explicit starting location. Program/file defaults to Program Files; folder and working-directory selection use Documents when no current target is available. Windows Documents/Pictures shortcuts resolve to the actual folders.
 - Add a themed icon chooser for individual icons from programs, DLLs and ICO files, plus image files. With no custom icon or program, it shows Windows shell32 icons. Choices remain drafts until Save; Cancel imports nothing.
 - Keep readable custom icon and sound filenames, number conflicting names, reuse identical imports and migrate older hashed names on Save. Preserve originals, manually placed files and modified assets.
