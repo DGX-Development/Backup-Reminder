@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "Id": "backup-jobs",
+      "Title": "File backup jobs",
+      "Detail": "Example launcher: replace File Explorer with your preferred backup tool.",
+      "Target": "%WINDIR%\\explorer.exe",
+      "Button": "Open File Explorer",
+      "IconPath": "%WINDIR%\\explorer.exe"
+    }
+  ],
+  "items": [
+    {
+      "Id": "backup-notes",
+      "Title": "Backup notes",
+      "Detail": "Open Notepad to record the settings and files you want to preserve.",
+      "Target": "%WINDIR%\\System32\\notepad.exe",
+      "Button": "Open Notepad"
+    },
+    {
+      "Id": "documents",
+      "Title": "Documents",
+      "Detail": "Open your Documents folder and back up the files you need.",
+      "Target": "knownfolder:Documents",
+      "IconPath": "%WINDIR%\\explorer.exe",
+      "Button": "Open folder"
+    },
+    {
+      "Id": "job-internal",
+      "Title": "1. Internal backup",
+      "Detail": "Run your internal-drive backup job and review its results.",
+      "Group": "backup-jobs",
+      "Target": ""
+    },
+    {
+      "Id": "job-external",
+      "Title": "2. External backup",
+      "Detail": "Connect your backup drive, run its backup job, and review the results.",
+      "Group": "backup-jobs",
+      "Target": ""
+    },
+    {
+      "Id": "job-settings",
+      "Title": "3. Application settings backup",
+      "Detail": "Back up your selected application settings and review the results.",
+      "Group": "backup-jobs",
+      "Target": ""
+    }
+  ],
+  "playReminderSound": true,
+  "reminderSoundPath": null
+}
