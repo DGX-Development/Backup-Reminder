@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Backup-Reminder</AssemblyName>
     <RootNamespace>BackupReminder</RootNamespace>
-    <Version>0.3.0</Version>
-    <InformationalVersion>0.3.0</InformationalVersion>
+    <Version>0.3.1</Version>
+    <InformationalVersion>0.3.1</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Company>DGX Development</Company>
     <ApplicationIcon>../../assets/backup-reminder.ico</ApplicationIcon>

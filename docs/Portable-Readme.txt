@@ -1,4 +1,4 @@
-Backup Reminder (0.3.0)
+Backup Reminder (0.3.1)
 DGX Development
 
 RUN

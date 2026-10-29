@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-10-29
+
+- Keep the logo, title and last-completed text on the window background, with a separate narrow menu bar in light and dark appearances.
+- Preserve existing menu styling, checklist and reminder behavior.
+
 ## 0.3.0 - 2026-10-29
 
 - Refine File, Settings and Help menu spacing with a more compact menu bar.

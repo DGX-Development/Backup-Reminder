@@ -57,7 +57,7 @@ internal sealed partial class MainWindow : Form
         Text = options.Development ? "Backup Reminder - Development" : "Backup Reminder";
         Size = new Size(760, 960); MinimumSize = new Size(700, 580); StartPosition = FormStartPosition.CenterScreen;
         AutoScaleMode = AutoScaleMode.Dpi; Font = body;
-        var header = new Panel { Dock = DockStyle.Top, Height = 118 };
+        var header = new Panel { Dock = DockStyle.Top, Height = 118, Tag = "window" };
         header.Controls.Add(new BrandPictureBox { Image = brand, SizeMode = PictureBoxSizeMode.Zoom, Bounds = new Rectangle(24,25,58,58) });
         header.Controls.Add(new Label { Text = "Backup Reminder", Font = heading, Bounds = new Rectangle(99,21,550,42) });
         string last = profile.State.LastCompleted is null ? "No completion recorded" : DateTimeOffset.Parse(profile.State.LastCompleted).ToLocalTime().ToString("MMM d, yyyy  h:mm tt");
