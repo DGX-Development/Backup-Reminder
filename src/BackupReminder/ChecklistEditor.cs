@@ -378,7 +378,7 @@ internal sealed class EditorPicker:RoundedButton
             var item=new ToolStripMenuItem(choices[i].Label){Checked=i==selection,BackColor=BackColor,ForeColor=ForeColor};
             item.Click+=(_,_)=>SelectedIndex=index;menu.Items.Add(item);
         }
-        ContextMenuStrip=menu;menu.Show(this,new Point(0,Height));
+        AppMenuRenderer.ApplySpacing(menu);ContextMenuStrip=menu;menu.Show(this,new Point(0,Height));
     }
     protected override void OnKeyDown(KeyEventArgs e)
     {

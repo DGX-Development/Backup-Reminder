@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 2026-10-29
+
+- Refine File, Settings and Help menu spacing with a more compact menu bar.
+- Refresh menu icons, align icons and labels, and improve selection highlights, separators and popup borders in light and dark appearances.
+- Apply matching spacing and selection styling to checklist and reminder dropdowns.
+- Preserve existing checklist, reminder, configuration and keyboard behavior.
+
 ## 0.2.1 - 2026-10-18
 
 - Show Developer Website in About, with DGX.digitalguy.me linking to the main developer website.

@@ -39,6 +39,7 @@ internal sealed partial class MainWindow : Form
     Color Muted => ColorTranslator.FromHtml(dark ? "#B0B8C6" : "#596779");
     Color Accent => ColorTranslator.FromHtml(dark ? "#78B7FF" : "#2468BB");
     Color ButtonColor => ColorTranslator.FromHtml(dark ? "#353535" : "#FAFAFA");
+    Color MenuHover => ColorTranslator.FromHtml(dark ? "#414141" : "#EEEEEE");
     Color DisabledColor => ColorTranslator.FromHtml(dark ? "#353C46" : "#DDE3EB");
 
     public MainWindow(Profile profile, Options options,IReminderScheduler? scheduler=null,IReminderAttention? attention=null)
@@ -222,7 +223,7 @@ internal sealed partial class MainWindow : Form
         WindowStyle.Apply(this,dark);
         foreach (ToolStripMenuItem item in appearanceMenu.DropDownItems) item.Checked = (string?)item.Tag == choice;
         RefreshMenuGlyphs();
-        var renderer=new AppMenuRenderer(new MenuColors(Surface,ButtonColor){UseSystemColors=false},Accent);
+        var renderer=new AppMenuRenderer(new MenuColors(Surface,MenuHover){UseSystemColors=false},Accent);
         menu.Renderer=renderer;
         void ColorMenus(ToolStripItemCollection entries)
         {
@@ -237,7 +238,7 @@ internal sealed partial class MainWindow : Form
                 }
             }
         }
-        ColorMenus(menu.Items); UpdateProgress(); Invalidate(true);
+        ColorMenus(menu.Items); AppMenuRenderer.ApplySpacing(menu); UpdateProgress(); Invalidate(true);
     }
     void ApplyTheme(Control control)
     {
@@ -248,7 +249,7 @@ internal sealed partial class MainWindow : Form
         if (control is LinkLabel link) { link.LinkColor = Accent; link.ActiveLinkColor = Accent; }
         if(control is RoundedPanel card) { card.BorderColor=ColorTranslator.FromHtml(dark?"#3B3B3B":"#E5E5E5");card.Invalidate(); }
         if(control is RoundedButton rounded) { rounded.BorderColor=ColorTranslator.FromHtml(dark?"#4A4A4A":"#DCDCDC");rounded.DisabledTextColor=Muted;rounded.Invalidate(); }
-        if(control is EditorPicker picker) {picker.BackColor=WindowColor;picker.ForeColor=TextColor;picker.Font=body;picker.PickerRenderer=new AppMenuRenderer(new MenuColors(WindowColor,ButtonColor){UseSystemColors=false},Accent);}
+        if(control is EditorPicker picker) {picker.BackColor=WindowColor;picker.ForeColor=TextColor;picker.Font=body;picker.PickerRenderer=new AppMenuRenderer(new MenuColors(WindowColor,MenuHover){UseSystemColors=false},Accent);}
         if(control is ScheduleDateTimeInput dateTime)dateTime.ApplyColors(WindowColor,ButtonColor,TextColor,Muted);
         if(control is ThemeNumberInput number)number.ApplyColors(WindowColor,ButtonColor,TextColor,Muted,Accent);
         if(control is TextBoxBase or ListBox or ComboBox or NumericUpDown) {control.BackColor=WindowColor;control.ForeColor=TextColor;}

@@ -12,7 +12,7 @@ internal sealed partial class MainWindow
     void AddMenuGlyph(ToolStripItem item,string glyph)=>menuGlyphs.Add(item,glyph);
     void RefreshMenuGlyphs()
     {
-        var color=SystemInformation.HighContrast?SystemColors.MenuText:TextColor;
+        var color=SystemInformation.HighContrast?SystemColors.MenuText:ColorTranslator.FromHtml(dark?"#D2D2D2":"#4B5563");
         foreach(var (item,glyph) in menuGlyphs)
         {
             var key=(glyph,color.ToArgb());

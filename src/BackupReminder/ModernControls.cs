@@ -332,19 +332,105 @@ internal sealed class ScheduleDateTimeInput:Panel
 }
 internal sealed class AppMenuRenderer(ProfessionalColorTable colors,Color accent):ToolStripProfessionalRenderer(colors)
 {
+    internal static void ApplySpacing(ToolStrip strip)
+    {
+        int Scale(int value)=>(int)Math.Round(value*strip.DeviceDpi/96f);
+        strip.Padding=strip is ToolStripDropDown?new Padding(Scale(6)):new Padding(Scale(10),Scale(4),0,Scale(4));
+        strip.ImageScalingSize=new Size(Scale(24),Scale(18));
+        foreach(ToolStripItem item in strip.Items)
+        {
+            if(item is ToolStripSeparator)continue;
+            item.Padding=strip is ToolStripDropDown?new Padding(Scale(12),Scale(9),Scale(20),Scale(9)):new Padding(Scale(7),Scale(3),Scale(7),Scale(3));
+            if(item is ToolStripMenuItem entry&&entry.HasDropDownItems)ApplySpacing(entry.DropDown);
+        }
+    }
+    protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+    {
+        e.Graphics.Clear(SystemInformation.HighContrast?SystemColors.Menu:e.ToolStrip.BackColor);
+    }
+    protected override void OnRenderImageMargin(ToolStripRenderEventArgs e) { }
+    protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+    {
+        if(e.ToolStrip is not ToolStripDropDown dropdown)return;
+        Color border=SystemInformation.HighContrast?SystemColors.WindowText:ControlPaint.Light(e.ToolStrip?.BackColor??ColorTable.ToolStripDropDownBackground,.18f);
+        using var pen=new Pen(border);
+        e.Graphics.DrawRectangle(pen,0,0,dropdown.Width-1,dropdown.Height-1);
+    }
+    protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+    {
+        if(!e.Item.Enabled||!(e.Item.Selected||e.Item.Pressed))return;
+        bool highContrast=SystemInformation.HighContrast;
+        using var fill=new SolidBrush(highContrast?SystemColors.Highlight:ColorTable.MenuItemSelected);
+        float scale=(e.ToolStrip?.DeviceDpi??96)/96f;
+        var bounds=new RectangleF(2*scale,scale,VisibleItemWidth(e.Item)-4*scale,e.Item.Height-2*scale);
+        if(bounds.Width<=0||bounds.Height<=0)return;
+        var state=e.Graphics.Save();
+        e.Graphics.SmoothingMode=SmoothingMode.AntiAlias;
+        using var shape=WindowStyle.Round(bounds,4*scale);
+        e.Graphics.FillPath(fill,shape);
+        e.Graphics.Restore(state);
+    }
+    protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
+    {
+        float scale=(e.ToolStrip?.DeviceDpi??96)/96f;
+        Color color=SystemInformation.HighContrast?SystemColors.WindowText:ControlPaint.Light(e.ToolStrip?.BackColor??ColorTable.ToolStripDropDownBackground,.18f);
+        using var pen=new Pen(color);
+        float y=e.Item.Height/2f;
+        e.Graphics.DrawLine(pen,9*scale,y,VisibleItemWidth(e.Item)-9*scale,y);
+    }
+    protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+    {
+        if(!e.Item.Enabled)e.TextColor=SystemInformation.HighContrast?SystemColors.GrayText:ControlPaint.Light(e.Item.ForeColor,.45f);
+        else if(SystemInformation.HighContrast)e.TextColor=e.Item.Selected||e.Item.Pressed?SystemColors.HighlightText:SystemColors.MenuText;
+        float scale=(e.ToolStrip?.DeviceDpi??96)/96f;
+        var text=e.TextRectangle;
+        if(e.ToolStrip is ToolStripDropDown)
+        {
+            int left=(int)Math.Round(46*scale),right=(int)Math.Round(20*scale);
+            text=new Rectangle(left,0,Math.Max(1,VisibleItemWidth(e.Item)-left-right),e.Item.Height);
+        }
+        else text=new Rectangle(text.X,0,text.Width,e.Item.Height);
+        e.TextRectangle=text;
+        e.TextFormat=(e.TextFormat&~(TextFormatFlags.Top|TextFormatFlags.Bottom))|TextFormatFlags.VerticalCenter|TextFormatFlags.SingleLine;
+        base.OnRenderItemText(e);
+    }
+    static int VisibleItemWidth(ToolStripItem item)=>Math.Min(item.Width,(item.Owner?.ClientSize.Width??item.Width)-item.Bounds.Left);
+    static Rectangle GlyphBounds(ToolStripItem item)
+    {
+        float scale=(item.Owner?.DeviceDpi??96)/96f;
+        int size=(int)Math.Round(18*scale);
+        return new Rectangle((int)Math.Round(14*scale),(item.Height-size)/2,size,size);
+    }
+    protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
+    {
+        if(e.Image is null)return;
+        var bounds=GlyphBounds(e.Item);
+        if(!e.Item.Enabled)
+        {
+            using var disabled=new Bitmap(e.Image,bounds.Size);
+            ControlPaint.DrawImageDisabled(e.Graphics,disabled,bounds.X,bounds.Y,e.Item.BackColor);
+            return;
+        }
+        var state=e.Graphics.Save();
+        e.Graphics.InterpolationMode=InterpolationMode.HighQualityBicubic;
+        e.Graphics.PixelOffsetMode=PixelOffsetMode.HighQuality;
+        e.Graphics.DrawImage(e.Image,bounds);
+        e.Graphics.Restore(state);
+    }
     protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
     {
-        var bounds=e.ImageRectangle;e.Graphics.SmoothingMode=SmoothingMode.AntiAlias;
-        using var pen=new Pen(SystemInformation.HighContrast?SystemColors.MenuText:accent,2);
+        var bounds=GlyphBounds(e.Item);e.Graphics.SmoothingMode=SmoothingMode.AntiAlias;
+        using var pen=new Pen(SystemInformation.HighContrast?(e.Item.Selected?SystemColors.HighlightText:SystemColors.MenuText):accent,2);
         float unit=Math.Max(1,Math.Min(bounds.Width,bounds.Height)/16f);
         float x=bounds.Left+(bounds.Width-11*unit)/2,y=bounds.Top+bounds.Height/2f;
         e.Graphics.DrawLines(pen,[new PointF(x,y),new PointF(x+4*unit,y+4*unit),new PointF(x+11*unit,y-4*unit)]);
     }
     protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
     {
-        var bounds=e.ArrowRectangle;float x=bounds.Left+bounds.Width/2f,y=bounds.Top+bounds.Height/2f;
+        var bounds=e.ArrowRectangle;float x=bounds.Left+bounds.Width/2f,y=(e.Item?.Height??bounds.Height)/2f;
+        if(e.Item is not null)x=Math.Min(x,VisibleItemWidth(e.Item)-12*(e.Item.Owner?.DeviceDpi??96)/96f);
         float size=Math.Max(2,Math.Min(bounds.Width,bounds.Height)/4f);
-        var color=SystemInformation.HighContrast?SystemColors.MenuText:e.Item?.ForeColor??e.ArrowColor;
+        var color=e.Item is {Enabled:false}?SystemColors.GrayText:SystemInformation.HighContrast?(e.Item?.Selected==true?SystemColors.HighlightText:SystemColors.MenuText):e.Item?.ForeColor??e.ArrowColor;
         using var pen=new Pen(color,1.5f);e.Graphics.SmoothingMode=SmoothingMode.AntiAlias;
         PointF[] points=e.Direction switch
         {

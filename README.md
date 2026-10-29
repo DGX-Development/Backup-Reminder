@@ -1,10 +1,10 @@
 # Backup Reminder
 
-[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-banner.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.2.1)
+[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-banner.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.0)
 
 A Windows checklist for the backups you prefer to do yourself. Open your tools, perform each backup, review the results, then check it off.
 
-**Version: 0.2.1.** Portable Windows x64 app, tested on Windows 11. See the [release history](CHANGELOG.md).
+**Version: 0.3.0.** Portable Windows x64 app, tested on Windows 11. See the [release history](CHANGELOG.md).
 
 ## Screenshots
 
@@ -21,7 +21,7 @@ The generic starter has two standalone examples and a group with three independe
 - Saves partial progress and records completion when every item is checked.
 - Keeps data profiles separate and activates an existing window on relaunch.
 - Includes a checklist editor, searchable Help, About, and System/Light/Dark appearance choices.
-- Uses softly rounded cards/buttons and Windows 11 window preferences where supported.
+- Uses softly rounded cards/buttons, refined menus with consistent line icons, and Windows 11 window preferences where supported.
 
 The project started with a simple need: some backups are best performed manually, but remembering every step is easy to overlook. The optional Windows reminder opens this checklist on your chosen schedule.
 
@@ -29,7 +29,7 @@ A completed checklist records your confirmation. It does not independently verif
 
 ## Getting started
 
-Download [Backup-Reminder-0.2.1-win-x64.zip](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.2.1/Backup-Reminder-0.2.1-win-x64.zip) from the [release page](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.2.1), extract the ZIP to a permanent folder, and double-click **Backup-Reminder.exe**. The Windows x64 build includes its .NET runtime and does not require PowerShell or a separately installed .NET runtime. Keep the included app license and Microsoft runtime licenses/notices with it.
+Download [Backup-Reminder-0.3.0-win-x64.zip](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.0/Backup-Reminder-0.3.0-win-x64.zip) from the [release page](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.0), extract the ZIP to a permanent folder, and double-click **Backup-Reminder.exe**. The Windows x64 build includes its .NET runtime and does not require PowerShell or a separately installed .NET runtime. Keep the included app license and Microsoft runtime licenses/notices with it.
 
 There is no installer or automatic updater. Enable optional reminders in Settings; installing or updating does not create a reminder automatically.
 
