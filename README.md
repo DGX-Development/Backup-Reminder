@@ -1,18 +1,20 @@
 # Backup Reminder
 
-[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-banner.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.1)
+[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-readme-title-1600x400.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.1)
 
 A Windows checklist for the backups you prefer to do yourself. Open your tools, perform each backup, review the results, then check it off.
 
 **Version: 0.3.1.** Portable Windows x64 app, tested on Windows 11. See the [release history](CHANGELOG.md).
 
+[**Download Backup Reminder for Windows x64**](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip)
+
 ## Screenshots
 
-The generic starter has two standalone examples and a group with three independently checked jobs.
+The generic starter has two standalone examples and a group with three independently checked jobs. Select either screenshot to open the native-size original.
 
 | Light appearance | Dark appearance |
 | --- | --- |
-| ![Backup checklist in light appearance](assets/screenshots/checklist-light.png) | ![Backup checklist in dark appearance](assets/screenshots/checklist-dark.png) |
+| [![Backup checklist in light appearance](assets/screenshots/backup-reminder-checklist-light-1280x860.png)](assets/screenshots/checklist-light.png) | [![Backup checklist in dark appearance](assets/screenshots/backup-reminder-checklist-dark-1280x860.png)](assets/screenshots/checklist-dark.png) |
 
 ## Features
 
