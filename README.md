@@ -1,14 +1,14 @@
 # Backup Reminder
 
-[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-readme-title-1600x400.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v1.0.2)
+![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-readme-title-1600x400.png)
 
 A Windows checklist for the backups you prefer to do yourself. Open your tools, perform each backup, review the results, then check it off.
 
-**Current release: 1.0.2.**
+## Current release
+
+[Version 1.0.2](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v1.0.2)
 
 [Windows installer](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/Backup-Reminder-1.0.2-Setup.exe) | [Portable ZIP](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/Backup-Reminder-1.0.2-Portable.zip) | [SHA-256 checksums](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/SHA256SUMS.txt)
-
-[**Download published Backup Reminder 0.3.1 for Windows x64**](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip)
 
 ## Screenshots
 
@@ -33,7 +33,7 @@ A completed checklist records your confirmation. It does not independently verif
 
 ## Getting started
 
-Download [Backup-Reminder-0.3.1-win-x64.zip](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip) from the [release page](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v1.0.2), extract the ZIP to a permanent folder, and double-click **Backup-Reminder.exe**. The Windows x64 build includes its .NET runtime and does not require PowerShell or a separately installed .NET runtime. Keep the included app license and Microsoft runtime licenses/notices with it.
+Run the Windows installer or extract the complete portable ZIP to a permanent folder and run **Backup-Reminder.exe**. Both downloads include the .NET runtime. Keep the supplied license files and notices.
 
 Version 1.0.2 provides an installer and portable ZIP. Help > Check for updates checks GitHub; updates are installed manually. Installing or updating does not enable reminders automatically.
 
