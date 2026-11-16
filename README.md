@@ -1,20 +1,22 @@
 # Backup Reminder
 
-[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-readme-title-1600x400.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.1)
+[![Backup Reminder: A checklist and reminder for the backups you do yourself](assets/backup-reminder-readme-title-1600x400.png)](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v1.0.2)
 
 A Windows checklist for the backups you prefer to do yourself. Open your tools, perform each backup, review the results, then check it off.
 
-**Version: 0.3.1.** Portable Windows x64 app, tested on Windows 11. See the [release history](CHANGELOG.md).
+**Current release: 1.0.2.**
 
-[**Download Backup Reminder for Windows x64**](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip)
+[Windows installer](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/Backup-Reminder-1.0.2-Setup.exe) | [Portable ZIP](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/Backup-Reminder-1.0.2-Portable.zip) | [SHA-256 checksums](https://github.com/DGX-Development/Backup-Reminder/releases/download/v1.0.2/SHA256SUMS.txt)
+
+[**Download published Backup Reminder 0.3.1 for Windows x64**](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip)
 
 ## Screenshots
 
-The generic starter has two standalone examples and a group with three independently checked jobs. Select either screenshot to open the native-size original.
+Version 1.0.2 with optional samples loaded. New profiles start empty. Select either screenshot to open its native-size capture.
 
 | Light appearance | Dark appearance |
 | --- | --- |
-| [![Backup checklist in light appearance](assets/screenshots/backup-reminder-checklist-light-1280x860.png)](assets/screenshots/checklist-light.png) | [![Backup checklist in dark appearance](assets/screenshots/backup-reminder-checklist-dark-1280x860.png)](assets/screenshots/checklist-dark.png) |
+| [![Backup checklist in light appearance](assets/screenshots/backup-reminder-1.0.2-light-1280x860.png)](assets/screenshots/backup-reminder-1.0.2-light-native.png) | [![Backup checklist in dark appearance](assets/screenshots/backup-reminder-1.0.2-dark-1280x860.png)](assets/screenshots/backup-reminder-1.0.2-dark-native.png) |
 
 ## Features
 
@@ -31,9 +33,9 @@ A completed checklist records your confirmation. It does not independently verif
 
 ## Getting started
 
-Download [Backup-Reminder-0.3.1-win-x64.zip](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip) from the [release page](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v0.3.1), extract the ZIP to a permanent folder, and double-click **Backup-Reminder.exe**. The Windows x64 build includes its .NET runtime and does not require PowerShell or a separately installed .NET runtime. Keep the included app license and Microsoft runtime licenses/notices with it.
+Download [Backup-Reminder-0.3.1-win-x64.zip](https://github.com/DGX-Development/Backup-Reminder/releases/download/v0.3.1/Backup-Reminder-0.3.1-win-x64.zip) from the [release page](https://github.com/DGX-Development/Backup-Reminder/releases/tag/v1.0.2), extract the ZIP to a permanent folder, and double-click **Backup-Reminder.exe**. The Windows x64 build includes its .NET runtime and does not require PowerShell or a separately installed .NET runtime. Keep the included app license and Microsoft runtime licenses/notices with it.
 
-There is no installer or automatic updater. Enable optional reminders in Settings; installing or updating does not create a reminder automatically.
+Version 1.0.2 provides an installer and portable ZIP. Help > Check for updates checks GitHub; updates are installed manually. Installing or updating does not enable reminders automatically.
 
 > **Windows security notice:** This app is not digitally signed, so Windows may display "Windows protected your PC" or an "unrecognized app" warning.
 >
@@ -43,18 +45,19 @@ There is no installer or automatic updater. Enable optional reminders in Setting
 
 ## Basic use
 
-1. Open **File > Edit checklist** to replace the generic examples with your own tasks and groups.
+1. Choose **Edit checklist** on the main page to add tasks and groups, or restore your configuration backup.
 2. Open each backup tool, folder or webpage, perform the backup, review its results, then check the item.
-3. Choose **Complete backups** when every item is checked. Closing the window saves unfinished progress and exits.
+3. Choose **Complete backups** when every item is checked. Checkmarks save as they change. X and Minimize can hide the app in the tray; **File > Exit** quits.
 4. Optionally enable **Settings > Reminder schedule**. Reminders open the checklist while you are signed in; they do not run backup jobs.
 
-Your settings and progress live separately from the executable. Use **Settings > Open data folder** to find them. See the [user guide](docs/user-guide.md) for configuration backup/restore, reminder behavior and safe updates.
+Installed data lives in `%LOCALAPPDATA%\Backup Reminder`. Portable data lives in the `profile` folder beside the executable. See the [user guide](docs/user-guide.md) for configuration backup/restore, reminder behavior and safe updates.
 
 ## Documentation
 
-- [User guide](docs/user-guide.md) — checklist editing, icons, profiles, configuration backup/restore, reminders, updates and more screenshots.
-- [Portable instructions](docs/Portable-Readme.txt) — standalone instructions included in the download.
-- [Changelog](CHANGELOG.md) — release history.
+- [User guide](docs/user-guide.md) - checklist editing, icons, profiles, configuration backup/restore, reminders, updates and more screenshots.
+- [Portable instructions](docs/Portable-Readme.txt) - standalone instructions included in the download.
+- [Development and verification](docs/development.md) - build the current desktop installer and portable archive.
+- [Changelog](CHANGELOG.md) - release history.
 
 ## Help and feedback
 

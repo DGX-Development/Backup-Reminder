@@ -41,8 +41,8 @@ internal sealed class ChecklistSettings
     {
         var settings = JsonSerializer.Deserialize<ChecklistSettings>(json, Profile.Json)
             ?? throw new InvalidDataException("Settings are empty.");
-        if (settings.Version != 1 || settings.Items is null || settings.Items.Count == 0 || settings.Groups is null || settings.ManagedFiles is null || settings.ManagedFileHashes is null || settings.RootOrder is null || settings.RootOrder.Any(string.IsNullOrWhiteSpace))
-            throw new InvalidDataException("Settings need version 1 and at least one item.");
+        if (settings.Version != 1 || settings.Items is null || settings.Groups is null || settings.ManagedFiles is null || settings.ManagedFileHashes is null || settings.RootOrder is null || settings.RootOrder.Any(string.IsNullOrWhiteSpace))
+            throw new InvalidDataException("Settings need version 1 and valid item and group lists.");
         static bool Invalid(List<ChecklistEntry> entries) => entries.Any(x => x is null || string.IsNullOrWhiteSpace(x.Id) || string.IsNullOrWhiteSpace(x.Title))
             || entries.Select(x => x.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() != entries.Count;
         if (Invalid(settings.Items) || Invalid(settings.Groups))

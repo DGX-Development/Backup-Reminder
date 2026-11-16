@@ -19,5 +19,7 @@
     <EmbeddedResource Include="../../settings.example.json" LogicalName="starter.json" />
     <EmbeddedResource Include="../../assets/backup-reminder.png" LogicalName="brand.png" />
     <EmbeddedResource Include="../../assets/backup-reminder.ico" LogicalName="brand.ico" />
+    <EmbeddedResource Include="../../assets/dgx-publisher.png" LogicalName="publisher.png" />
+    <EmbeddedResource Include="Fluent-Icons-LICENSE.txt" LogicalName="Fluent-Icons-LICENSE.txt" />
   </ItemGroup>
 </Project>

@@ -5,7 +5,9 @@ internal sealed class Options
     public string DataDirectory { get; private set; } = "";
     public string? SettingsPath { get; private set; }
     public string? PreviewPath { get; private set; }
-    public string Appearance { get; private set; } = "System";
+    public string? AppearanceOverride { get; private set; }
+    public string Appearance => AppearanceOverride ?? "System";
+    public bool UsesDefaultProfile { get; private set; }
     public bool Development { get; private set; }
     public string? TestDirectory { get; private set; }
     public bool SmokeTest { get; private set; }
@@ -22,7 +24,7 @@ internal sealed class Options
                 case "--data-directory": result.DataDirectory = Path.GetFullPath(Value()); break;
                 case "--settings": result.SettingsPath = Path.GetFullPath(Value()); break;
                 case "--preview": result.PreviewPath = Path.GetFullPath(Value()); break;
-                case "--appearance": result.Appearance = Value(); break;
+                case "--appearance": result.AppearanceOverride = Value(); break;
                 case "--development": result.Development = true; break;
                 case "--scheduler-test": result.SchedulerTestDirectory=Path.GetFullPath(Value()); break;
                 case "--self-test": result.TestDirectory = Path.GetFullPath(Value()); break;
@@ -32,6 +34,7 @@ internal sealed class Options
             }
         }
         if (!new[] { "System", "Light", "Dark" }.Contains(result.Appearance)) throw new ArgumentException("Appearance must be System, Light or Dark.");
+        result.UsesDefaultProfile = result.DataDirectory.Length == 0 && !result.Development && result.SettingsPath is null;
         if (result.DataDirectory.Length == 0)
             result.DataDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Backup Reminder", result.Development ? "Development" : "");
         return result;
@@ -77,6 +80,12 @@ internal static class Program
                     using var closeTimer = new System.Windows.Forms.Timer { Interval = 3000 };
                     closeTimer.Tick += (_, _) => { closeTimer.Stop(); form.Close(); };
                     closeTimer.Start(); Application.Run(form);
+                }
+                else if (form.StartInTray)
+                {
+                    using var context = new ApplicationContext(form);
+                    form.StartHidden();
+                    Application.Run(context);
                 }
                 else Application.Run(form);
             }

@@ -13,14 +13,13 @@ internal sealed partial class MainWindow : Form
     readonly Dictionary<string,string> checkedTimes=new(StringComparer.OrdinalIgnoreCase);
     bool reloadingChecklist;
     readonly List<IDisposable> owned = [];
-    readonly Panel scroll = new() { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(22, 12, 22, 12), Tag = "window" };
+    readonly EditorScrollArea scroll = new() { Dock = DockStyle.Fill, Padding = new Padding(22, 12, 10, 12), Tag = "window" };
     readonly TableLayoutPanel stack = new() { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1, Margin = Padding.Empty, Tag = "window" };
     readonly Label progress = new() { AutoSize = true, Location = new Point(26, 14) };
     readonly ProgressBar bar = new() { Location = new Point(26, 38), Size = new Size(680, 5), Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right };
     readonly Button complete = new RoundedButton() { Text = "Complete backups", Location = new Point(530, 57), Size = new Size(175, 36), Anchor = AnchorStyles.Top | AnchorStyles.Right, Tag = "primary" };
     readonly MenuStrip menu = new() { Dock = DockStyle.Top, Padding = new Padding(15, 4, 0, 4), ShowItemToolTips = true };
-    readonly ToolStripMenuItem appearanceMenu = new("&Appearance");
-    readonly Font body = new("Segoe UI Variable Text", 10);
+    readonly Font body = new("Segoe UI Variable Text", 10.5f);
     readonly Font small = new("Segoe UI Variable Text", 9);
     readonly Font title = new("Segoe UI Variable Text", 10.5f, FontStyle.Bold);
     readonly Font heading = new("Segoe UI Variable Display", 21, FontStyle.Bold);
@@ -44,7 +43,7 @@ internal sealed partial class MainWindow : Form
 
     public MainWindow(Profile profile, Options options,IReminderScheduler? scheduler=null,IReminderAttention? attention=null)
     {
-        this.profile = profile; this.options = options; appearance = options.Appearance;
+        this.profile = profile; this.options = options; appearance = options.Appearance; LoadWindowPreferences();
         reminderScheduler=scheduler??(options.PreviewPath is not null||options.TestDirectory is not null?new MemoryReminderScheduler():new WindowsReminderScheduler(profile.DirectoryPath,profile.SettingsPath,Environment.ProcessPath!));
         reminderAttention=attention??(options.PreviewPath is not null||options.TestDirectory is not null||options.SmokeTest?new RecordingReminderAttention():new WindowsReminderAttention());
         foreach(var pair in profile.State.CheckedAt)if(profile.State.Checked.Contains(pair.Key,StringComparer.OrdinalIgnoreCase))checkedTimes[pair.Key]=pair.Value;
@@ -65,10 +64,10 @@ internal sealed partial class MainWindow : Form
         Controls.Add(header);
         var footer = new Panel { Dock = DockStyle.Bottom, Height = 112, Width = ClientSize.Width };
         footer.Controls.Add(progress); footer.Controls.Add(bar); footer.Controls.Add(complete);
-        var close = MakeButton("Close for now"); close.SetBounds(26,57,145,36); close.Click += (_,_) => Close(); footer.Controls.Add(close);
+        var close = MakeButton("Close for now"); close.SetBounds(26,57,145,36); close.Click += (_,_) => ExitApplication(); footer.Controls.Add(close);
         Controls.Add(footer);
         Controls.Add(scroll); scroll.BringToFront();
-        stack.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100)); scroll.Controls.Add(stack);
+        stack.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100)); scroll.SetContent(stack);
         stack.Controls.Add(new Label { Text = "Check each item after completing its backup.", Dock = DockStyle.Fill, Height = 35, Margin = new Padding(3,2,0,10), Tag = "muted" });
         var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in profile.Settings.Items)
@@ -86,6 +85,13 @@ internal sealed partial class MainWindow : Form
             if(e.CloseReason==CloseReason.UserClosing&&VisibleDialog() is not null)
             {
                 e.Cancel=true;ActivateWindow();return;
+            }
+            if (UsesTray && !exiting && !completed && e.CloseReason == CloseReason.UserClosing && preferences?.CloseToTray == true)
+            {
+                try { profile.Save(boxes.Where(x => x.Checked).Select(x => (string)x.Tag!), profile.State.LastCompleted, checkedTimes); HideToTray(); }
+                catch (Exception error) { ShowError("Could not save progress: " + error.Message); }
+                e.Cancel = true;
+                return;
             }
             if (options.PreviewPath is not null || completed) return;
             try { profile.Save(boxes.Where(x => x.Checked).Select(x => (string)x.Tag!), profile.State.LastCompleted,checkedTimes); }
@@ -109,7 +115,7 @@ internal sealed partial class MainWindow : Form
     void AddItem(ChecklistEntry entry)
     {
         var row = new RoundedPanel { Dock = DockStyle.Fill, Height = 80, Margin = new Padding(0,0,0,8) };
-        var check = new CheckBox { Tag = entry.Id, Checked = profile.State.Checked.Contains(entry.Id,StringComparer.OrdinalIgnoreCase), AccessibleName = entry.Title + " backup completed", Bounds = new Rectangle(14,27,25,26) };
+        var check = new ThemeCheckBox { Tag = entry.Id, Checked = profile.State.Checked.Contains(entry.Id,StringComparer.OrdinalIgnoreCase), AccessibleName = entry.Title + " backup completed", Bounds = new Rectangle(14,27,25,26) };
         row.Controls.Add(check); boxes.Add(check);
         bool hasIcon = !string.IsNullOrWhiteSpace(entry.Target) || !string.IsNullOrWhiteSpace(entry.IconPath);
         int x = hasIcon ? 87 : 47;
@@ -206,11 +212,11 @@ internal sealed partial class MainWindow : Form
         try
         {
             profile.Save([], DateTimeOffset.Now.ToString("o")); completed = true;
-            MessageBox.Show(this,"Your backup checklist completion has been recorded.","Backup Reminder"); Close();
+            ShowNotice(this,"Your backup checklist completion has been recorded.","Backup Reminder"); Close();
         }
         catch (Exception error) { ShowError("Could not save completion: " + error.Message); }
     }
-    void ShowError(string message) => MessageBox.Show(this,message,"Backup Reminder",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+    void ShowError(string message) => ShowNotice(this,message,"Backup Reminder",MessageBoxButtons.OK,MessageBoxIcon.Warning);
     void SetAppearance(string choice)
     {
         appearance = choice; dark = choice == "Dark";
@@ -221,7 +227,6 @@ internal sealed partial class MainWindow : Form
         }
         ApplyTheme(this); BackColor = WindowColor;
         WindowStyle.Apply(this,dark);
-        foreach (ToolStripMenuItem item in appearanceMenu.DropDownItems) item.Checked = (string?)item.Tag == choice;
         RefreshMenuGlyphs();
         var renderer=new AppMenuRenderer(new MenuColors(Surface,MenuHover){UseSystemColors=false},Accent);
         menu.Renderer=renderer;
@@ -233,7 +238,7 @@ internal sealed partial class MainWindow : Form
                 if(item is ToolStripMenuItem submenu&&submenu.HasDropDownItems)
                 {
                     submenu.DropDown.Renderer=renderer;submenu.DropDown.BackColor=Surface;submenu.DropDown.ForeColor=TextColor;
-                    if(submenu.DropDown is ToolStripDropDownMenu dropdown){dropdown.ShowCheckMargin=submenu==appearanceMenu;dropdown.ShowImageMargin=submenu!=appearanceMenu;}
+                    if(submenu.DropDown is ToolStripDropDownMenu dropdown){dropdown.ShowCheckMargin=false;dropdown.ShowImageMargin=true;}
                     ColorMenus(submenu.DropDownItems);
                 }
             }
@@ -245,7 +250,8 @@ internal sealed partial class MainWindow : Form
         control.BackColor = (string?)control.Tag == "window" ? WindowColor : control is Label or PictureBox or CheckBox ? control.Parent?.BackColor ?? Surface : Surface;
         control.ForeColor = (string?)control.Tag == "muted" ? Muted : TextColor;
         if (control is Button button)
-        { button.FlatStyle = FlatStyle.Flat; button.Font = title; button.Cursor = Cursors.Hand; button.BackColor = ButtonColor; button.ForeColor = dark ? TextColor : ColorTranslator.FromHtml("#235993"); button.FlatAppearance.BorderSize = 0; }
+        { button.FlatStyle = FlatStyle.Flat; button.Font = body; button.Cursor = Cursors.Hand; button.BackColor = ButtonColor; button.ForeColor = TextColor; button.FlatAppearance.BorderSize = 0; }
+        if(control is ThemeCheckBox check){check.IndicatorFill=WindowColor;check.IndicatorBorder=ColorTranslator.FromHtml(dark?"#626262":"#858585");check.HoverFill=MenuHover;check.Invalidate();}
         if (control is LinkLabel link) { link.LinkColor = Accent; link.ActiveLinkColor = Accent; }
         if(control is RoundedPanel card) { card.BorderColor=ColorTranslator.FromHtml(dark?"#3B3B3B":"#E5E5E5");card.Invalidate(); }
         if(control is RoundedButton rounded) { rounded.BorderColor=ColorTranslator.FromHtml(dark?"#4A4A4A":"#DCDCDC");rounded.DisabledTextColor=Muted;rounded.Invalidate(); }
@@ -275,11 +281,7 @@ internal sealed partial class MainWindow : Form
             var commandMenu=(ToolStripMenuItem)menu.Items[index];commandMenu.ShowDropDown();Application.DoEvents();
             RenderMenu(commandMenu.DropDown,Path.ChangeExtension(path,null)+(index==0?"-file-menu.png":"-help-menu.png"));commandMenu.HideDropDown();
         }
-        var settingsMenu=(ToolStripMenuItem)menu.Items[1];settingsMenu.ShowDropDown();appearanceMenu.Select();Application.DoEvents();
-        RenderMenu(settingsMenu.DropDown,Path.ChangeExtension(path,null)+"-settings-menu.png");
-        appearanceMenu.ShowDropDown();appearanceMenu.DropDownItems.Cast<ToolStripMenuItem>().Single(x=>x.Checked).Select();Application.DoEvents();
-        RenderMenu(appearanceMenu.DropDown,Path.ChangeExtension(path,null)+"-appearance-menu.png");
-        appearanceMenu.HideDropDown();settingsMenu.HideDropDown();
+        using(var settings=CreateSettings()) RenderForm(settings,Path.ChangeExtension(path,null)+"-settings.png");
         using(var help=CreateHelp()) RenderForm(help,Path.ChangeExtension(path,null)+"-help.png");
         using(var about=CreateAbout()) RenderForm(about,Path.ChangeExtension(path,null)+"-about.png");
         using(var confirmation=CreateUnsavedPrompt()) RenderForm(confirmation,Path.ChangeExtension(path,null)+"-unsaved.png");

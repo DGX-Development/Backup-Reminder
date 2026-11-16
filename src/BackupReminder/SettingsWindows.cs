@@ -63,7 +63,7 @@ internal sealed partial class MainWindow
         var viewport=new EditorScrollArea {Name="ScheduleFields",Dock=DockStyle.Fill};card.Controls.Add(viewport);
         var fields=new TableLayoutPanel {Dock=DockStyle.Top,AutoSize=true,AutoSizeMode=AutoSizeMode.GrowAndShrink,ColumnCount=1,Margin=Padding.Empty};fields.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));viewport.SetContent(fields);
         fields.Controls.Add(new Label {Text="Reminder timing",Font=groupFont,Height=36,Dock=DockStyle.Fill,Margin=Padding.Empty});
-        var enabled=new CheckBox {Name="EnableReminders",Text="Enable scheduled reminders",Checked=saved.Enabled,Height=40,Dock=DockStyle.Fill,Margin=Padding.Empty};fields.Controls.Add(enabled);
+        var enabled=new ThemeCheckBox {Name="EnableReminders",Text="Enable scheduled reminders",Checked=saved.Enabled,Height=40,Dock=DockStyle.Fill,Margin=Padding.Empty};fields.Controls.Add(enabled);
         var status=new Label {Name="ScheduleStatus",Tag="muted",Height=48,Dock=DockStyle.Fill,Margin=Padding.Empty};fields.Controls.Add(status);
         void RefreshStatus(bool applied=false)
         {
@@ -108,7 +108,7 @@ internal sealed partial class MainWindow
         void ModeChanged(){RefreshSummary();bool monthly=mode.SelectedIndex==0;monthlyRow.Visible=monthly;intervalRow.Visible=!monthly;startRow.Visible=!monthly;explanation.Text=(monthly?"Shorter months use their last day.":"Windows tasks support intervals of 1 to 365 days, from the start date.")+"\r\nYou must be signed in. Completing backups early leaves the schedule unchanged.";}
         mode.SelectedIndexChanged+=(_,_)=>ModeChanged();ModeChanged();
         fields.Controls.Add(new Label {Text="Notification",Font=groupFont,Height=38,Dock=DockStyle.Fill,Margin=Padding.Empty});
-        var sound=new CheckBox {Name="PlayReminderSound",Text="Play a sound for scheduled reminders",Checked=draft.PlayReminderSound,Height=34,Dock=DockStyle.Fill,Margin=Padding.Empty};fields.Controls.Add(sound);
+        var sound=new ThemeCheckBox {Name="PlayReminderSound",Text="Play a sound for scheduled reminders",Checked=draft.PlayReminderSound,Height=34,Dock=DockStyle.Fill,Margin=Padding.Empty};fields.Controls.Add(sound);
         var toggleRow=new Panel {Height=46,Dock=DockStyle.Fill,Margin=Padding.Empty};
         var toggle=MakeButton("Sound options");toggle.Name="SoundOptions";toggle.SetBounds(0,2,160,36);toggle.AccessibleDescription="Show or hide custom notification sound options.";toggleRow.Controls.Add(toggle);fields.Controls.Add(toggleRow);
         var soundOptions=new TableLayoutPanel {Name="SoundOptionsPanel",Dock=DockStyle.Fill,ColumnCount=1,AutoSize=true,Visible=false,Margin=Padding.Empty};soundOptions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));fields.Controls.Add(soundOptions);
@@ -144,7 +144,7 @@ internal sealed partial class MainWindow
                 bool custom=reminderAttention.PlaySound(path);
                 soundHint.Text=path is not null&&!custom?"Windows could not play this WAV encoding. Export it as PCM WAV. Preview used the Windows sound.":"Preview requested. Playback follows your Windows volume and sound settings.";
             }
-            catch(Exception error){if(options.TestDirectory is not null)throw;MessageBox.Show(dialog,error.Message,"Could not preview sound",MessageBoxButtons.OK,MessageBoxIcon.Warning);}
+            catch(Exception error){if(options.TestDirectory is not null)throw;ShowNotice(dialog,error.Message,"Could not preview sound",MessageBoxButtons.OK,MessageBoxIcon.Warning);}
         };
         SoundChanged();
         var save=PageButton(footer,"Save schedule",160,true);save.Name="SaveSchedule";
@@ -162,7 +162,7 @@ internal sealed partial class MainWindow
                 ReminderSettings.Save(profile,draft,reminderScheduler);draft=profile.CopySettings();saved=draft.Schedule!;soundSelection=new(draft.ReminderSoundPath,draft.ReminderSoundName);soundPath.Text=soundSelection.DisplayText;
                 RefreshStatus(true);cancel.Text="Close";return true;
             }
-            catch(Exception error){if(options.TestDirectory is not null)throw;MessageBox.Show(dialog,error.Message,"Could not save schedule",MessageBoxButtons.OK,MessageBoxIcon.Warning);return false;}
+            catch(Exception error){if(options.TestDirectory is not null)throw;ShowNotice(dialog,error.Message,"Could not save schedule",MessageBoxButtons.OK,MessageBoxIcon.Warning);return false;}
         }
         string Snapshot()=>System.Text.Json.JsonSerializer.Serialize(new {
             enabled.Checked,Mode=mode.SelectedIndex,Day=Descendants<TextBox>(day).Single().Text,Interval=Descendants<TextBox>(interval).Single().Text,
@@ -209,14 +209,20 @@ internal sealed partial class MainWindow
             if(callbackError is not null)throw callbackError;
             check(entered&&WindowStyle.IsWindowEnabled(Handle)&&!IsDisposed,"Closing "+dialog.Text+" returns control to the main window");
         }
-        string initialAppearance=appearance;
-        foreach(string mode in new[]{"Dark","Light","System"})
+        using (var settings = CreateSettings())
         {
-            appearanceMenu.DropDownItems.Cast<ToolStripMenuItem>().Single(x=>(string?)x.Tag==mode).PerformClick();
-            check(appearanceMenu.DropDown.Renderer is AppMenuRenderer&&menu.Renderer is AppMenuRenderer,"Appearance uses the shared check and arrow renderer in "+mode);
-            check(appearanceMenu.DropDownItems.Cast<ToolStripMenuItem>().Count(x=>x.Checked)==1&&appearanceMenu.DropDownItems.Cast<ToolStripMenuItem>().Single(x=>x.Checked).Tag?.ToString()==mode,"Appearance check follows the selected "+mode+" setting");
+            settings.Show();
+            Application.DoEvents();
+            Descendants<Button>(settings).Single(button => button.Text == "Window").PerformClick();
+            var flags = Descendants<ThemeCheckBox>(settings).Where(box => box.Visible).ToArray();
+            check(flags.Length == 4 && flags.Select(box => box.Checked).SequenceEqual(new[] { true, true, false, false }),
+                "Window tab has the same four defaults as Local Dashboard");
+            flags.Single(box => box.Text == "Start minimized in the system tray").Checked = true;
+            Descendants<Button>(settings).Single(button => button.Text == "Save" && button.Visible).PerformClick();
+            var savedWindow = System.Text.Json.JsonSerializer.Deserialize<WindowPreferences>(File.ReadAllText(PreferencesPath), Profile.Json);
+            check(savedWindow?.StartMinimized == true && savedWindow.StartWithWindows == false,
+                "Saving Start minimized keeps Windows sign-in independent");
         }
-        SetAppearance(initialAppearance);
         string originalText=File.ReadAllText(profile.SettingsPath);
         string originalId=profile.Settings.Items[0].Id;
         using(var editor=CreateChecklistEditor())
@@ -383,13 +389,14 @@ internal sealed partial class MainWindow
         {
             help.Show();Application.DoEvents();
             var search=Descendants<TextBox>(help).Single(x=>x.Name=="HelpSearch");
-            var topics=Descendants<ListBox>(help).Single();
-            search.Text="icons";check(topics.Items.Count>0&&Descendants<RichTextBox>(help).Single().Text.Contains("icons",StringComparison.OrdinalIgnoreCase),"Help search selects matching content");
-            search.Text="zzzz-no-match";check(topics.Items.Count==0&&Descendants<Label>(help).Single(x=>x.Name=="HelpTopicTitle").Text=="No matching topics","Help has an explicit empty search state");
-            search.Clear();check(topics.Items.Count==Topics.Count,"Clearing Help search restores all topics");
+            var topics=Descendants<EditorScrollArea>(help).Single(x=>x.Name=="HelpTopics");
+            int TopicCount()=>Descendants<Button>(topics).Count();
+            search.Text="icons";check(TopicCount()>0&&Descendants<Label>(help).Single(x=>x.Name=="HelpContent").Text.Contains("icons",StringComparison.OrdinalIgnoreCase),"Help search selects matching content");
+            search.Text="zzzz-no-match";check(TopicCount()==0&&Descendants<Label>(help).Single(x=>x.Name=="HelpTopicTitle").Text=="No matching topics","Help has an explicit empty search state");
+            search.Clear();check(TopicCount()==Topics.Count,"Clearing Help search restores all topics");
         }
         using(var about=CreateAbout())
-        {check(Descendants<LinkLabel>(about).Single().Enabled&&Descendants<LinkLabel>(about).Single().Text=="DGX.digitalguy.me"&&Descendants<Label>(about).Any(label=>label.Text=="Developer Website")&&DeveloperWebsite=="https://dgx.digitalguy.me","About shows Developer Website and links DGX.digitalguy.me to the main website");}
+        {check(Descendants<LinkLabel>(about).Single().Enabled&&Descendants<LinkLabel>(about).Single().Text=="dgx.digitalguy.me"&&Descendants<BrandPictureBox>(about).Any(picture=>picture.AccessibleName=="DGX Development"&&picture.Image is not null)&&DeveloperWebsite=="https://dgx.digitalguy.me","About shows the DGX publisher mark and links to the main website");}
         Close();
     }
     void ReloadChecklist(bool restored=false)

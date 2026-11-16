@@ -171,6 +171,7 @@ internal sealed partial class MainWindow
     internal void HandleScheduledReminder()
     {
         // Each scheduled launch reaches here once. Preserve checkmarks and any open edit/dialog.
+        if (!Visible || WindowState == FormWindowState.Minimized) ActivateWindow();
         var target=VisibleDialog()??this;
         if(profile.Settings.PlayReminderSound)reminderAttention.PlaySound(string.IsNullOrWhiteSpace(profile.Settings.ReminderSoundPath)?null:profile.ResolveAsset(profile.Settings.ReminderSoundPath));
         if(!reminderAttention.IsForeground(this))reminderAttention.Highlight(this,target);

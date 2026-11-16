@@ -1,118 +1,235 @@
-Backup Reminder (0.3.1)
-DGX Development
+Backup Reminder 1.0.2
 
-RUN
-Extract this ZIP into a folder and double-click Backup-Reminder.exe.
-This build targets Windows x64 and includes its .NET runtime. PowerShell is
-not required to run it. No installer or background service is created automatically. This is an unsigned release. Windows may show an unknown-publisher warning.
+Extract the entire portable ZIP and run Backup-Reminder.exe.
 
-CUSTOM FILES AND GROUPS
-Imported icons and sounds keep readable filenames. Different files sharing a name
-get numbered suffixes; identical imported files are reused. Originals stay untouched.
-Older hashed names migrate on Save. Custom icon Browse offers icons from the current file/program, or Windows shell32
-when neither is available. Browse inside the chooser selects another source file.
-Individual library icons become managed PNGs on Save. The editor shows filenames. Choose a Group to place tasks under
-one heading, or None (show as a separate task) for an independent item.
-Configuration backups validate asset checksums and still accept older backups.
+Getting started
 
-BROWSE DEFAULTS
-Program/file: current target folder, otherwise Program Files.
-Folder: current folder (including Windows known folders), otherwise Documents.
-Working directory: current folder, program folder, then Documents.
-Custom icon: current custom file, selected program, then Windows shell32 icons.
-Sound: current sound folder, otherwise Windows Media.
-Configuration backup/restore: Documents.
-Cancel leaves the existing selection unchanged.
+Backup Reminder helps you remember and track the backups you perform. It does not run backup jobs or verify their results.
 
-YOUR DATA AND BACKUPS
-The default profile is stored in:
-%LOCALAPPDATA%\Backup Reminder
+## Start your checklist
+1. Choose Edit checklist to add your tasks, or restore a configuration backup.
+2. Open the tool, folder or website for a task.
+3. Perform the backup and review the result.
+4. Check the item only when that work is complete.
 
-settings.json contains checklist items, groups, launch targets, icon choices and
-reminder timing and sound preferences. Use Settings > Open data folder to find
-the active profile.
-checklist.json contains saved checkmarks, per-item checkedAt timestamps and the
-last completion timestamp. Checked times record checkbox confirmation, not
-verified backups. Unchecking or completing clears the relevant item times.
-Close the app before copying these files for backup or restoring them.
-Save imports custom icons into icons/ and WAV sounds into sounds/ in the data
-folder. Originals stay untouched. EXE icons are extracted as PNG images. Discarding
-unsaved edits imports nothing. Relative asset paths keep working when the profile is moved.
-Existing external references work and are imported on the next settings save
-when available. Missing files keep their references and normal fallback.
+## Keep in mind
+- New profiles start empty.
+- Opening a tool does not check off the task.
+- Complete backups records your confirmation, not proof that your files can be restored.
 
-File > Back up configuration exports settings, progress, icons and sound to ZIP.
-File > Restore configuration validates a backup and preserves the current one
-in recovery/before-restore.zip. Restore turns reminders off. Review program paths
-and enable reminders in Reminder schedule when ready. Configuration ZIPs contain
-personal paths/preferences; keep them private. Tools, documents and Windows
-tasks are not included. Unavailable custom files are reported.
-The starter does not contain your personal backup configuration.
-Use File > Edit checklist to customize tasks, groups, paths and icons.
-What to open can be Nothing for a checklist-only step with no Open button.
-The checklist editor and Reminder schedule show a disabled Saved button when
-unchanged. Edits enable Save changes or Save schedule; successful saves keep
-the page open and return to Saved. Sound Preview does not count as an edit.
-Cancel, Close, X or Escape with unsaved changes offers Save changes, Discard
-changes or Keep editing. Failed saves keep the page open with edits intact.
-Already saved pages close immediately. Main-window checkmarks still save on close.
-Settings > Reminder schedule: choose a monthly day/time, turn on Enable scheduled
-reminders, and Save schedule to create a real Windows task. The page displays
-its actual status and next run. The task appears directly under Task Scheduler
-Library as Backup Reminder - followed by your Windows username. Additional
-profiles include a readable label, with a number if needed. Turn Enable off
-and click Save schedule to remove this profile's task; timing preferences remain.
-Date and time follow Windows regional settings. A calendar button selects the
-interval start date, and a live summary confirms your choices.
-Intervals from 1 to 365 days are also supported. Shorter months use their last day.
-You must be signed in to Windows. The task opens the checklist, never backup jobs.
-Completing backups early leaves the regular schedule unchanged.
-Play a sound for scheduled reminders is on by default and can be turned off in
-the Notification section. Expand Sound options for a custom .wav file, Browse
-and Preview. Preview tries your unsaved choice; Save schedule keeps it. Saved
-sounds show their original filename rather than an internal storage name. Browse
-opens beside the selected file, or Windows Media when that folder is unavailable. Older
-saved sounds may show Saved custom sound until reselected with Browse. A file
-renamed to .wav may contain a different audio format; convert it to PCM WAV. If a
-custom file cannot play, the Windows sound is used. Saved custom WAV files are included in configuration backups.
-Manual launches are quiet. A scheduled reminder plays once
-and briefly highlights the taskbar if needed, without interrupting open edits
-or forcing an existing window to the front. Manual relaunches activate it.
-Close saves unfinished checkmarks and exits completely. Complete backups records
-a finished session. Later reminders keep unfinished progress; no tray app remains.
-Keep the executable in a permanent folder. If you move it, open it from the new
-location and save the schedule again. Disable reminders before resetting a profile.
-Existing timing preferences are not automatically enabled during an update.
-Owned tasks with recognized actions migrate from identifier names to readable
-names when the app next opens, preserving the schedule and enabled state.
-Windows tasks are separate from the JSON files. After restoring settings on
-another PC, review paths, enable reminders in Reminder schedule and Save schedule
-to register the task there.
+Setup wizard
 
-UPDATES
-1. Close Backup Reminder.
-2. Download and extract the new release ZIP.
-3. Replace all supplied application files in the same app folder.
-4. Reopen Backup Reminder.
-Keep the separate data folder, including icons/ and sounds/. Keeping the EXE
-at the same path preserves the scheduled reminder. After moving it, save the
-schedule again from the new location. Never replace personal data with starter
-examples. Automatic update checking/installation is not implemented.
+The first manual launch of a new profile opens setup. Help > Run setup again opens it later.
 
-PROFILES
---development uses %LOCALAPPDATA%\Backup Reminder\Development.
---data-directory "%LOCALAPPDATA%\BackupReminderExample" selects a different data folder.
-The default profile is independent of where the executable is stored.
-Only one window is allowed per profile, including the earlier script version.
+Next and Back move between pages. Choose appearance, window behavior and reminder timing, then Finish to save and apply them.
 
-PURPOSE
-Use Open to launch a backup tool, folder or webpage. Perform the backup yourself,
-review its results, and check the item. Complete backups records your confirmation;
-it does not verify that files were backed up or can be restored.
+Appearance changes in the wizard are applied at Finish. Skip setup closes the wizard without applying those choices; the existing checklist remains available.
 
-LICENSES
-Backup Reminder uses the PolyForm Noncommercial License 1.0.0.
-The unchanged official terms are included in LICENSE.txt.
-Credit to DigitalGuy is appreciated but optional and adds no license conditions.
-Microsoft runtime license terms and third-party notices accompany this build.
-No third-party backup application or personal custom artwork is bundled.
+Restore from a backup opens a Backup Reminder configuration ZIP. After confirmation, restoration applies immediately and closes setup; you do not need to click Finish.
+
+Your previous configuration is kept in recovery/before-restore.zip. Reminders are disabled after restoration.
+
+Review Settings and program paths before enabling them again.
+
+Edit checklist
+
+Select a task or group in the left list to edit it. Add task creates a separate task; choose its Group to place it under a group heading.
+
+Add group creates a heading that can have a shared launcher. A group is not itself a checkable task.
+
+Its indented tasks can be checked separately.
+
+Name labels the entry. Description explains the backup step.
+
+What to open selects Nothing, Program or file, Folder, or Website. Target is the program/file path, folder path or full HTTP/HTTPS website address.
+
+Include https:// for a website. Browse target selects a local file or folder.
+
+Button label supplies the launcher text. Choose None (separate task) to keep a task outside groups.
+
+Drag the dotted handle, or use Ctrl+Up/Down, to reorder within a section. Moving a group moves its section.
+
+Use the Group field to change a task's membership. Choose icon selects a local image or an icon from an EXE/DLL.
+
+Use target icon clears the custom selection. Save changes applies the draft and leaves the editor open.
+
+Saved means there are no pending edits.
+
+Arguments and working directory
+
+Advanced contains optional launch settings. Most tasks can leave both fields blank.
+
+Arguments are passed to a program or file, not a folder or website. For Notepad, an example argument is "D:\Notes\Backup notes.txt".
+
+Quote paths that contain spaces and follow the target program's argument syntax.
+
+Working directory is the starting folder for a program/file. When blank, the app uses the target file's folder.
+
+A custom path can contain Windows environment variables. This field does not select where your backups are stored.
+
+Only configure programs and arguments you trust.
+
+Saving and unsaved changes
+
+In Edit checklist, Save changes saves without closing. Closing an edited checklist asks whether to Save changes, Discard changes or Keep editing.
+
+The confirmation's Escape or X keeps editing.
+
+Settings uses Save and Cancel. Save applies all three settings pages and closes the window.
+
+Cancel or X discards unsaved settings and restores the saved appearance. Settings does not show the editor's unsaved-changes prompt.
+
+Preview sound does not save changes. A failed save reports an error and leaves the window open.
+
+Main checklist checkmarks are saved as they change.
+
+Progress and completion
+
+Check each item only after performing and reviewing its backup. The timestamp records when you checked the box, not proof of when a backup ran.
+
+Unchecking clears that timestamp.
+
+Complete backups becomes available when the checklist has at least one task and all tasks are checked. It records completion, clears the checkmarks and shows a confirmation; the window stays open.
+
+An unfinished checklist retains its progress when another reminder arrives. Backup Reminder does not independently verify backup integrity.
+
+Close for now and File > Exit quit the app. By default, X and Minimize hide it in the system tray.
+
+Double-click the tray icon or choose Open Backup Reminder from its menu to reopen it. Settings > Window controls these behaviors.
+
+Reminders and schedules
+
+Open Settings > Reminder schedule, click the reminder icon beside Pin, or right-click the tray icon and choose Reminder schedule. The tray command uses a calendar icon and opens the schedule page directly.
+
+Turn on Remind me to back up. Choose Every month with a day, or Every few days with an interval of 1-365 days and a start date.
+
+Type a starting date or use the calendar button to choose it. The date field and calendar follow the selected appearance.
+
+Dates use MM/DD/YYYY and times use a 12-hour clock with AM/PM, in your local time. Days 29-31 use the last day in a shorter month.
+
+Review the summary, then Save. During setup, Finish applies these choices.
+
+Save registers or updates a real Windows scheduled task for this profile. Turn Remind me to back up off and Save to remove that task while retaining the timing choices.
+
+The main reminder icon reflects the actual Windows task state; its tooltip provides status and the next run when available.
+
+Reminders can launch the app when it is closed and reopen it from the tray or a minimized state. An existing visible window and open editor are preserved.
+
+Sound is requested once if enabled; the taskbar is highlighted when the app is not foreground. No backup jobs run automatically.
+
+You must be signed in. The task uses your Windows account without a stored password or administrator elevation.
+
+It does not wake the PC. Windows may run a missed reminder later.
+
+Completing a checklist early does not move the schedule. Each profile owns a separate task.
+
+Reminder sound
+
+Sound offers No sound, Windows default, or Custom WAV. Preview sound tries the unsaved selection.
+
+For Custom WAV, Browse chooses a file and starts beside the selected file when its folder is available, otherwise in Windows Media. Save in Settings, or Finish in setup, keeps the choice and imports the WAV into the profile.
+
+Use a supported WAV file; renaming another audio format to .wav does not convert it. Preview reports invalid files.
+
+At reminder time, a missing or unplayable custom sound falls back to the Windows Information sound. Windows volume and sound settings still apply.
+
+Manual launches are quiet.
+
+Appearance and window behavior
+
+Settings > Appearance offers System, Light and Dark with a fixed blue accent. Changes preview immediately in Settings; Save keeps them and Cancel restores the saved appearance.
+
+Pin keeps the main window above ordinary windows and uses the accent color when enabled.
+
+Settings > Window controls close/minimize to tray, Start when I sign in to Windows and Start minimized in the system tray. Startup choices take effect after Save.
+
+Closing the app does not remove a scheduled reminder or sign-in registration.
+
+Lock window sizes preserves chosen sizes while allowing moves and minimization. Settings remains resizable so you can unlock it.
+
+Reset window sizes takes effect when you Save; it clears the lock and saved sizes. Window preferences are included in configuration backups.
+
+Configuration and backups
+
+File > Back up configuration saves a ZIP containing checklist settings, progress, window preferences, available custom icons and reminder sound. Available program-derived icons are embedded too.
+
+It does not copy your backup tools, documents or Windows task definitions. Missing files are reported.
+
+Keep configuration ZIPs private because they contain personal paths and preferences.
+
+File > Restore configuration validates the ZIP and keeps the prior configuration in recovery/before-restore.zip. It turns reminders off.
+
+Review paths and Settings before re-enabling reminders. Restoring preferences does not automatically register Windows startup.
+
+If this profile already had a sign-in entry, review and save the startup choice to update or remove it.
+
+Custom artwork and WAV files are copied into managed icons and sounds folders on save; originals stay untouched. For a manual backup, exit the app and copy the entire profile folder.
+
+Do not replace your data with starter examples.
+
+Install, portable and uninstall
+
+The installer defaults to Programs\Backup Reminder under your Windows LocalAppData folder; its profile is %LOCALAPPDATA%\Backup Reminder. You can choose a different application folder during installation.
+
+Installing alone does not enable reminders or Windows startup; setup appears when you launch a new profile.
+
+For portable use, extract the whole ZIP and run Backup-Reminder.exe. Keep portable.mode beside it.
+
+The profile folder beside the executable is created on first launch, or reused if already present. The portable app does not automatically import an installed profile.
+
+Restore a configuration ZIP during setup or from File.
+
+Before moving or deleting a portable folder, turn off reminders and Windows startup and Save. After moving, open the new location and enable the choices again.
+
+Do not discard the profile folder.
+
+Exit the installed app before uninstalling. Uninstall removes that installed profile's Windows reminder and sign-in registrations, then offers Keep settings or Remove settings.
+
+Keep retains the profile for reinstall; Remove deletes that profile, including its managed icons, sound and recovery copy. External documents, tools and separately saved backup ZIPs are left alone.
+
+Silent uninstall keeps settings. If the profile contains a linked file or folder, Remove settings leaves the profile in place and explains why. The installer does not remove registrations belonging to a separate portable profile.
+
+Profiles and updates
+
+The active profile contains settings.json, checklist.json and window-preferences.json, plus managed icons/sounds and setup/window state. An explicit --data-directory selects another profile.
+
+Only one app instance opens per profile. Relaunching activates its existing window or dialog.
+
+Help > Check for updates reads the latest stable GitHub release. It reports an available update, an equal version, or that this copy is newer.
+
+There is no automatic updater.
+
+Exit before replacing application files. Keep the profile and use the same executable path to preserve registrations.
+
+For portable updates, replace the supplied application files without replacing or deleting your profile folder. If moving the app, disable reminder/startup registrations first and re-enable them from the new location.
+
+Website and support
+
+Help > Report an issue asks before opening Backup Reminder's public GitHub new-issue page in your browser. A GitHub account is required to submit an issue.
+
+Nothing is submitted automatically and Backup Reminder stays open. Include the version and steps to reproduce the problem, leaving out private paths and data.
+
+About links to dgx.digitalguy.me and includes license information.
+
+Keyboard
+
+F1 opens Help. Ctrl+Q exits.
+
+Tab moves between controls and Space toggles a focused checkbox. In Edit checklist, the dotted handle supports dragging and Ctrl+Up/Down reordering.
+
+Escape cancels dialogs where Cancel or Close is available; an unsaved editor may first ask you to keep or discard changes.
+
+Sample content
+
+Samples are optional. New profiles start empty.
+
+## Load examples
+1. Open Help > Run setup again, or use the welcome page on first launch.
+2. Choose Load sample content. This applies immediately.
+3. Explore the entries labeled Sample, then edit them or add your own.
+
+Loading again does not duplicate existing sample IDs. Loading does not replace your content or change reminder, monitoring or startup settings. Restoring a backup does not automatically load samples.
+
+## Remove examples
+Choose Remove samples on the same page. It removes only unchanged sample entries. Edited or completed examples are kept; you can remove those individually using the editor. Linked files are not deleted.
+

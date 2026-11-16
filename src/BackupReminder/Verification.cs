@@ -34,9 +34,10 @@ internal static class Verification
             Check(!ReminderSound.Play(wave,_=>false,()=>throw new IOException()),"Audio failure never prevents opening a reminder");
             string defaultDirectory=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"Backup Reminder");
             Check(WindowsReminderScheduler.FriendlyName("ExampleUser",defaultDirectory,Path.Combine(defaultDirectory,"settings.json"))=="Backup Reminder - ExampleUser","Default task name is a readable Windows username");
+            Check(ChecklistSettings.Parse("{\"version\":1,\"items\":[],\"groups\":[]}").Items.Count==0,"Empty checklist is valid for a fresh profile");
             var settings=ChecklistSettings.Parse(Profile.Resource("starter.json"));
             Check(settings.Items.Count==5 && settings.Items.Count(x=>x.Group is null)==2 && settings.Groups.Count==1,"Generic starter has two standalone tasks and three grouped jobs");
-            foreach(var test in new[]{"duplicate","empty","orphan","version","duplicate-group"})
+            foreach(var test in new[]{"duplicate","orphan","version","duplicate-group"})
             {
                 var invalid=JsonSerializer.Deserialize<ChecklistSettings>(Profile.Resource("starter.json"),Profile.Json)!;
                 switch(test)

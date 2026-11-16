@@ -31,6 +31,11 @@ internal static class ProfileBackup
         }
         foreach(var item in settings.Items.Concat(settings.Groups))
         {
+            if(string.IsNullOrWhiteSpace(item.IconPath)&&!string.IsNullOrWhiteSpace(item.Target))
+            {
+                string target=Profile.ResolveTarget(item.Target);
+                if(File.Exists(target)&&new[]{".exe",".dll",".ico",".png",".jpg",".jpeg",".bmp"}.Contains(Path.GetExtension(target).ToLowerInvariant()))item.IconPath=target;
+            }
             item.IconPath=Collect(item.IconPath,false,item.IconName??(ProfileAssets.IsLegacyName(item.IconPath)?item.Title+".png":null),item.IconIndex);
             if(ProfileAssets.IsManagedName(item.IconPath))item.IconIndex=null;
             if(ProfileAssets.IsManagedName(item.IconPath))item.IconName=Path.GetFileName(item.IconPath);
@@ -41,12 +46,17 @@ internal static class ProfileBackup
         settings.ManagedFileHashes=files.ToDictionary(x=>x.Key,x=>ProfileAssets.Hash(x.Value),StringComparer.OrdinalIgnoreCase);
         files["settings.json"]=JsonSerializer.SerializeToUtf8Bytes(settings,Profile.Json);
         files["checklist.json"]=JsonSerializer.SerializeToUtf8Bytes(profile.State,Profile.Json);
+        string preferences=Path.Combine(profile.DirectoryPath,"window-preferences.json");
+        if(File.Exists(preferences))
+        {
+            byte[] bytes=File.ReadAllBytes(preferences);ValidatePreferences(bytes);files["window-preferences.json"]=bytes;
+        }
         files["backup.json"]=JsonSerializer.SerializeToUtf8Bytes(new {format="BackupReminder",version=2,missingFiles=missing,assetHashes=settings.ManagedFileHashes},Profile.Json);
         if(files.Count>1003||files.Values.Any(x=>x.Length>25*1024*1024)||files.Values.Sum(x=>(long)x.Length)>Limit)throw new InvalidDataException("Configuration backup exceeds 100 MB.");
         string full=Path.GetFullPath(destination);
         // A backup must never replace live configuration or one of its assets.
         var protectedFiles=ProfileAssets.References(profile.Settings).Select(profile.ResolveAsset)
-            .Append(profile.SettingsPath).Append(profile.StatePath).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            .Append(profile.SettingsPath).Append(profile.StatePath).Append(preferences).ToHashSet(StringComparer.OrdinalIgnoreCase);
         if(protectedFiles.Contains(full))throw new IOException("Choose a ZIP filename outside your configuration files.");
         string pending=full+"."+Guid.NewGuid().ToString("N")+".pending";
         try
@@ -58,7 +68,13 @@ internal static class ProfileBackup
         finally{if(File.Exists(pending))File.Delete(pending);}
         return missing;
     }
-    internal sealed record Content(ChecklistSettings Settings,ChecklistState State,Dictionary<string,byte[]> Assets);
+    internal sealed record Content(ChecklistSettings Settings,ChecklistState State,Dictionary<string,byte[]> Assets,byte[]? Preferences=null);
+    static void ValidatePreferences(byte[] bytes)
+    {
+        if(bytes.Length>65536)throw new InvalidDataException("Window preferences are too large.");
+        var value=JsonSerializer.Deserialize<WindowPreferences>(bytes,Profile.Json)??throw new InvalidDataException("Window preferences are empty.");
+        if(value.Appearance is not ("System" or "Light" or "Dark"))throw new InvalidDataException("Unsupported appearance preference.");
+    }
     internal static Content Read(string file)
     {
         using var archive=ZipFile.OpenRead(file);
@@ -67,7 +83,7 @@ internal static class ProfileBackup
         foreach(var entry in archive.Entries)
         {
             string name=entry.FullName;
-            if(name is not ("backup.json" or "settings.json" or "checklist.json")&&!ProfileAssets.IsManagedName(name))
+            if(name is not ("backup.json" or "settings.json" or "checklist.json" or "window-preferences.json")&&!ProfileAssets.IsManagedName(name))
                 throw new InvalidDataException("Unexpected file in configuration backup: "+name);
             if(name.Contains('\\')||entry.Length>25*1024*1024||(total+=entry.Length)>Limit||files.ContainsKey(name))
                 throw new InvalidDataException("Configuration backup has invalid or oversized entries.");
@@ -105,7 +121,9 @@ internal static class ProfileBackup
                 expectedHashes!.TryGetValue(name,out string? expected)&&expected==hash;
             if(!references.Contains(name)||!valid)throw new InvalidDataException("Configuration backup has an unreferenced or damaged asset.");
         }
-        return new(settings,state,assets);
+        files.TryGetValue("window-preferences.json",out var preferences);
+        if(preferences is not null)ValidatePreferences(preferences);
+        return new(settings,state,assets,preferences);
     }
     internal static string Restore(Profile profile,string file,IReminderScheduler scheduler)
     {
@@ -133,15 +151,19 @@ internal static class ProfileBackup
             // Preserve a single previous configuration; backups contain settings and assets, never programs or task definitions.
             Export(profile,recovery);
             byte[]? previousState=File.Exists(profile.StatePath)?File.ReadAllBytes(profile.StatePath):null;
+            string preferencesPath=Path.Combine(profile.DirectoryPath,"window-preferences.json");
+            byte[]? previousPreferences=File.Exists(preferencesPath)?File.ReadAllBytes(preferencesPath):null;
             var known=incoming.Settings.Items.Select(x=>x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
             try
             {
                 profile.Save(incoming.State.Checked.Where(known.Contains),incoming.State.LastCompleted,incoming.State.CheckedAt);
+                if(incoming.Preferences is not null)File.WriteAllBytes(preferencesPath,incoming.Preferences);
                 ReminderSettings.Save(profile,incoming.Settings,scheduler);
             }
             catch
             {
                 if(previousState is null)File.Delete(profile.StatePath);else File.WriteAllBytes(profile.StatePath,previousState);
+                if(previousPreferences is null)File.Delete(preferencesPath);else File.WriteAllBytes(preferencesPath,previousPreferences);
                 profile.ReloadState();throw;
             }
             return recovery;
@@ -160,7 +182,7 @@ internal sealed partial class MainWindow
         try
         {
             SaveCurrentProgress();var missing=ProfileBackup.Export(profile,picker.FileName);
-            MessageBox.Show(this,"Configuration backup saved. It includes your checklist, progress, icons and sound, but not backup programs or their data."+(missing.Count>0?"\r\n\r\nSome existing custom files were unavailable and could not be included:\r\n"+string.Join("\r\n",missing):""),"Configuration backed up",MessageBoxButtons.OK,missing.Count>0?MessageBoxIcon.Warning:MessageBoxIcon.Information);
+            ShowNotice(this,"Configuration backup saved. It includes your checklist, progress, icons and sound, but not backup programs or their data."+(missing.Count>0?"\r\n\r\nSome existing custom files were unavailable and could not be included:\r\n"+string.Join("\r\n",missing):""),"Configuration backed up",MessageBoxButtons.OK,missing.Count>0?MessageBoxIcon.Warning:MessageBoxIcon.Information);
         }
         catch(Exception error){ShowError("Could not back up configuration: "+error.Message);}
     }
@@ -171,9 +193,9 @@ internal sealed partial class MainWindow
         try
         {
             var incoming=ProfileBackup.Read(picker.FileName);
-            if(MessageBox.Show(this,$"Replace this profile with {incoming.Settings.Items.Count} tasks from the backup?\r\n\r\nYour current configuration will be preserved in recovery\\before-restore.zip. Reminders will be turned off. Program paths may need adjustment on this PC; enable reminders in Reminder schedule when ready.","Restore configuration",MessageBoxButtons.OKCancel,MessageBoxIcon.Warning)!=DialogResult.OK)return;
+            if(ShowNotice(this,$"Replace this profile with {incoming.Settings.Items.Count} tasks from the backup?\r\n\r\nYour current configuration will be preserved in recovery\\before-restore.zip. Reminders will be turned off. Program paths may need adjustment on this PC; enable reminders in Reminder schedule when ready.","Restore configuration",MessageBoxButtons.OKCancel,MessageBoxIcon.Warning)!=DialogResult.OK)return;
             string recovery=ApplyConfigurationBackup(picker.FileName);
-            MessageBox.Show(this,"Configuration restored. Check your program paths, then use Settings > Reminder schedule to enable reminders.\r\n\r\nPrevious configuration: "+recovery,"Configuration restored",MessageBoxButtons.OK,MessageBoxIcon.Information);
+            ShowNotice(this,"Configuration restored. Check your program paths, then use Settings > Reminder schedule to enable reminders.\r\n\r\nPrevious configuration: "+recovery,"Configuration restored",MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
         catch(Exception error){ShowError("Could not restore configuration: "+error.Message);}
     }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.2 - 2026-11-15
+
+- Introduce the WPF interface with shared setup, Settings, Help, About and confirmation layouts.
+- Provide an installer and self-contained portable ZIP. Fresh profiles start empty and can optionally load removable samples or restore a backup.
+- Add clearer monthly and interval scheduling, AM/PM time, a schedule shortcut and consistent tray controls.
+- Use drag handles in the checklist editor, protect unsaved edits, and preserve custom icons, sounds, progress and window preferences in configuration backups.
+- Improve small-icon rendering and organize Help into short sections and procedures.
+
 ## 0.3.1 - 2026-10-29
 
 - Keep the logo, title and last-completed text on the window background, with a separate narrow menu bar in light and dark appearances.

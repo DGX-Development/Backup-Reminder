@@ -1,0 +1,246 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<!-- Presentation templates from BroadcastForge App.xaml. Dashboard owns this copy. -->
+<Style TargetType="Slider">
+ <Setter Property="Height" Value="24"/>
+ <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+ <Setter Property="Template"><Setter.Value>
+  <ControlTemplate TargetType="Slider">
+   <Grid Background="Transparent" SnapsToDevicePixels="True">
+    <Border Height="4" Margin="12,0" CornerRadius="2" Background="{DynamicResource Theme5A5A5A}" VerticalAlignment="Center"/>
+    <Track x:Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+     <Track.DecreaseRepeatButton>
+      <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+       <RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Grid Background="Transparent"><Border Height="4" CornerRadius="2" Background="{DynamicResource DashboardAccent}" VerticalAlignment="Center"/></Grid></ControlTemplate></RepeatButton.Template>
+      </RepeatButton>
+     </Track.DecreaseRepeatButton>
+     <Track.Thumb>
+      <Thumb Width="24" Height="24" Focusable="False">
+       <Thumb.Template><ControlTemplate TargetType="Thumb">
+        <Grid Background="Transparent">
+         <Ellipse x:Name="Grip" Width="16" Height="16" Fill="{DynamicResource DashboardAccent}" Stroke="{DynamicResource Theme252525}" StrokeThickness="2"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+         <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Grip" Property="Width" Value="18"/><Setter TargetName="Grip" Property="Height" Value="18"/></Trigger>
+         <Trigger Property="IsDragging" Value="True"><Setter TargetName="Grip" Property="Stroke" Value="{DynamicResource ThemeF2F2F2}"/></Trigger>
+        </ControlTemplate.Triggers>
+       </ControlTemplate></Thumb.Template>
+      </Thumb>
+     </Track.Thumb>
+     <Track.IncreaseRepeatButton>
+      <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+       <RepeatButton.Template><ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate></RepeatButton.Template>
+      </RepeatButton>
+     </Track.IncreaseRepeatButton>
+    </Track>
+    <Border x:Name="KeyboardFocus" Background="{DynamicResource DashboardAccent}" Height="2" VerticalAlignment="Bottom" Margin="8,0" Visibility="Collapsed" IsHitTestVisible="False"/>
+   </Grid>
+   <ControlTemplate.Triggers>
+    <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="KeyboardFocus" Property="Visibility" Value="Visible"/></Trigger>
+    <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+   </ControlTemplate.Triggers>
+  </ControlTemplate>
+ </Setter.Value></Setter>
+</Style>
+<Style TargetType="ScrollViewer">
+ <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+ <Setter Property="Template"><Setter.Value>
+  <ControlTemplate TargetType="ScrollViewer">
+   <Grid Background="{TemplateBinding Background}">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Margin="{TemplateBinding Padding}"
+       Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+       CanContentScroll="{TemplateBinding CanContentScroll}"/>
+    <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical" Style="{DynamicResource {x:Type ScrollBar}}"
+       Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"
+       Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+    <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource {x:Type ScrollBar}}"
+       Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"
+       Value="{Binding HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+   </Grid>
+   <ControlTemplate.Triggers>
+    <MultiTrigger><MultiTrigger.Conditions>
+     <Condition Property="VerticalScrollBarVisibility" Value="Auto"/>
+     <Condition Property="ComputedVerticalScrollBarVisibility" Value="Collapsed"/>
+    </MultiTrigger.Conditions><Setter TargetName="PART_VerticalScrollBar" Property="Visibility" Value="Hidden"/></MultiTrigger>
+    <MultiTrigger><MultiTrigger.Conditions>
+     <Condition Property="HorizontalScrollBarVisibility" Value="Auto"/>
+     <Condition Property="ComputedHorizontalScrollBarVisibility" Value="Collapsed"/>
+    </MultiTrigger.Conditions><Setter TargetName="PART_HorizontalScrollBar" Property="Visibility" Value="Hidden"/></MultiTrigger>
+   </ControlTemplate.Triggers>
+  </ControlTemplate>
+ </Setter.Value></Setter>
+</Style>
+<Style x:Key="SelectionAccentPath" TargetType="Path">
+ <Setter Property="Data" Value="M 10,1 L 7,1 Q 1,1 1,7 L 1,29 Q 1,35 7,35 L 10,35"/>
+ <Setter Property="Stretch" Value="Fill"/>
+ <Setter Property="Stroke" Value="{DynamicResource DashboardAccent}"/>
+ <Setter Property="StrokeThickness" Value="2"/>
+ <Setter Property="StrokeStartLineCap" Value="Round"/>
+ <Setter Property="StrokeEndLineCap" Value="Round"/>
+</Style>
+<SolidColorBrush x:Key="Background" Color="#202020"/><SolidColorBrush x:Key="Surface" Color="#2B2B2B"/><SolidColorBrush x:Key="Muted" Color="#B9B9B9"/>
+<SolidColorBrush x:Key="Theme202020" Color="#202020"/>
+<SolidColorBrush x:Key="Theme252525" Color="#252525"/>
+<SolidColorBrush x:Key="Theme262626" Color="#262626"/>
+<SolidColorBrush x:Key="Theme2B2B2B" Color="#2B2B2B"/>
+<SolidColorBrush x:Key="Theme303030" Color="#303030"/>
+<SolidColorBrush x:Key="Theme383838" Color="#383838"/>
+<SolidColorBrush x:Key="Theme414141" Color="#414141"/>
+<SolidColorBrush x:Key="Theme444444" Color="#444444"/>
+<SolidColorBrush x:Key="Theme454545" Color="#454545"/>
+<SolidColorBrush x:Key="Theme484848" Color="#484848"/>
+<SolidColorBrush x:Key="Theme4A4A4A" Color="#4A4A4A"/>
+<SolidColorBrush x:Key="Theme5A5A5A" Color="#5A5A5A"/>
+<SolidColorBrush x:Key="Theme888888" Color="#888888"/>
+<SolidColorBrush x:Key="Theme969696" Color="#969696"/>
+<SolidColorBrush x:Key="ThemeA5A5A5" Color="#A5A5A5"/>
+<SolidColorBrush x:Key="ThemeB9B9B9" Color="#B9B9B9"/>
+<SolidColorBrush x:Key="ThemeC1C1C1" Color="#C1C1C1"/>
+<SolidColorBrush x:Key="ThemeEEEEEE" Color="#EEEEEE"/>
+<SolidColorBrush x:Key="ThemeF2F2F2" Color="#F2F2F2"/>
+<SolidColorBrush x:Key="ThemeFFFFFF" Color="#FFFFFF"/>
+<Style TargetType="CheckBox">
+ <Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/>
+ <Setter Property="Padding" Value="6,0,0,0"/>
+ <Setter Property="VerticalContentAlignment" Value="Center"/>
+ <Setter Property="FocusVisualStyle">
+  <Setter.Value>
+   <Style TargetType="Control">
+    <Setter Property="Template">
+     <Setter.Value>
+      <ControlTemplate>
+       <Border Margin="4" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource Theme969696}"/>
+      </ControlTemplate>
+     </Setter.Value>
+    </Setter>
+   </Style>
+  </Setter.Value>
+ </Setter>
+ <Setter Property="Template">
+  <Setter.Value>
+   <ControlTemplate TargetType="CheckBox">
+    <Grid Background="Transparent" SnapsToDevicePixels="True">
+     <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+     <Grid Width="16" Height="16" VerticalAlignment="Center">
+      <Border x:Name="Box" Background="{DynamicResource Theme252525}"
+              BorderBrush="{DynamicResource Theme4A4A4A}" BorderThickness="1"/>
+      <Path x:Name="Check" Data="M 0,3 L 3,6 L 9,0" Width="10" Height="7" Stretch="Uniform"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Stroke="{TemplateBinding Foreground}" StrokeThickness="1.5" StrokeStartLineCap="Round"
+            StrokeEndLineCap="Round" StrokeLineJoin="Round" Visibility="Collapsed"/>
+      <Border x:Name="Mixed" Width="8" Height="2" CornerRadius="1"
+              HorizontalAlignment="Center" VerticalAlignment="Center"
+              Background="{TemplateBinding Foreground}" Visibility="Collapsed"/>
+     </Grid>
+     <ContentPresenter Grid.Column="1" Margin="{TemplateBinding Padding}"
+                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+    </Grid>
+    <ControlTemplate.Triggers>
+     <Trigger Property="IsChecked" Value="True"><Setter TargetName="Check" Property="Visibility" Value="Visible"/></Trigger>
+     <Trigger Property="IsChecked" Value="{x:Null}"><Setter TargetName="Mixed" Property="Visibility" Value="Visible"/></Trigger>
+     <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="Background" Value="{DynamicResource Theme454545}"/></Trigger>
+     <Trigger Property="IsPressed" Value="True"><Setter TargetName="Box" Property="Background" Value="{DynamicResource Theme383838}"/></Trigger>
+     <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".5"/></Trigger>
+    </ControlTemplate.Triggers>
+   </ControlTemplate>
+  </Setter.Value>
+ </Setter>
+</Style>
+<Style TargetType="Button">
+ <Setter Property="FocusVisualStyle"><Setter.Value><Style TargetType="Control"><Setter Property="Template"><Setter.Value><ControlTemplate><Border Margin="4" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource Theme969696}"/></ControlTemplate></Setter.Value></Setter></Style></Setter.Value></Setter>
+ <Setter Property="HorizontalContentAlignment" Value="Center"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="Background" Value="{DynamicResource Theme383838}"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Height" Value="36"/><Setter Property="Padding" Value="12,0"/><Setter Property="Margin" Value="0,0,9,8"/><Setter Property="Cursor" Value="Hand"/>
+ <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Grid UseLayoutRounding="True"><Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="7" SnapsToDevicePixels="False"/><ContentPresenter x:Name="ButtonContent" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="True"/><Border x:Name="NavigationMarker" Width="11" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="1,1,0,1" Visibility="Collapsed" IsHitTestVisible="False"><Path Style="{StaticResource SelectionAccentPath}"/></Border></Grid><ControlTemplate.Triggers><Trigger Property="Selector.IsSelected" Value="True"><Setter TargetName="NavigationMarker" Property="Visibility" Value="Visible"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="border" Property="Opacity" Value=".8"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".48"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+</Style>
+<Style TargetType="Menu" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="Transparent" /><Setter Property="Foreground" Value="{DynamicResource ThemeEEEEEE}" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="8,5" /></Style>
+<Style TargetType="ContextMenu" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="{DynamicResource Theme2B2B2B}" /><Setter Property="Foreground" Value="{DynamicResource ThemeEEEEEE}" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ContextMenu"><Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="5" SnapsToDevicePixels="True"><ScrollViewer CanContentScroll="True" MaxHeight="600" VerticalScrollBarVisibility="Auto"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" /></ScrollViewer></Border></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="Separator" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Separator"><Border Height="1" Margin="10,5" Background="{DynamicResource Theme444444}" /></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}" BasedOn="{StaticResource {x:Type Separator}}"/><Style TargetType="MenuItem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="{DynamicResource ThemeEEEEEE}" /><Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="11,8" /><Setter Property="Margin" Value="2,1" /><Setter Property="FontSize" Value="14" /><Setter Property="FocusVisualStyle" Value="{x:Null}" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="MenuItem"><Grid SnapsToDevicePixels="True"><Border x:Name="MenuRow" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="False" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions><Grid x:Name="IconBox" Width="24" Margin="0,0,8,0"><ContentPresenter x:Name="IconContent" ContentSource="Icon" VerticalAlignment="Center" HorizontalAlignment="Left" /><TextBlock x:Name="CheckMark" Text="✓" Foreground="{DynamicResource DashboardAccent}" Visibility="Collapsed" VerticalAlignment="Center" /></Grid><ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center" /><TextBlock x:Name="Gesture" FontWeight="Normal" Grid.Column="2" Text="{TemplateBinding InputGestureText}" Foreground="{DynamicResource ThemeA5A5A5}" Margin="30,0,4,0" VerticalAlignment="Center" /><TextBlock x:Name="SubmenuArrow" Grid.Column="3" Text="›" Visibility="Collapsed" Margin="15,0,0,0" FontSize="16" VerticalAlignment="Center" /></Grid></Border><Popup x:Name="PART_Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=MenuRow}" IsOpen="{Binding IsSubmenuOpen,RelativeSource={RelativeSource TemplatedParent}}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" HorizontalOffset="-6" VerticalOffset="-1" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><Grid Background="Transparent"><Border x:Name="PopupSurface" Margin="6" TextElement.Foreground="{TemplateBinding Foreground}" TextElement.FontSize="{TemplateBinding FontSize}" Background="{DynamicResource Theme2B2B2B}" CornerRadius="10" Padding="5" MinWidth="250" SnapsToDevicePixels="True"><Border.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="Black" Opacity="{DynamicResource MenuShadowOpacity}" RenderingBias="Quality"/></Border.Effect><ScrollViewer CanContentScroll="True" MaxHeight="600" VerticalScrollBarVisibility="Auto"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Cycle" KeyboardNavigation.TabNavigation="Cycle" /></ScrollViewer></Border></Grid></Popup></Grid><ControlTemplate.Triggers><Trigger Property="Role" Value="TopLevelHeader"><Setter TargetName="IconBox" Property="Visibility" Value="Collapsed" /><Setter TargetName="Gesture" Property="Visibility" Value="Collapsed" /><Setter Property="Padding" Value="12,6" /></Trigger><Trigger Property="Role" Value="TopLevelItem"><Setter TargetName="IconBox" Property="Visibility" Value="Collapsed" /><Setter TargetName="Gesture" Property="Visibility" Value="Collapsed" /></Trigger><Trigger Property="Role" Value="SubmenuHeader"><Setter TargetName="PART_Popup" Property="Placement" Value="Right" /><Setter TargetName="PART_Popup" Property="HorizontalOffset" Value="-1" /><Setter TargetName="PART_Popup" Property="VerticalOffset" Value="-11" /><Setter TargetName="SubmenuArrow" Property="Visibility" Value="Visible" /></Trigger><Trigger Property="IsHighlighted" Value="True"><Setter TargetName="MenuRow" Property="Background" Value="{DynamicResource Theme414141}" /></Trigger><Trigger Property="IsSubmenuOpen" Value="True"><Setter TargetName="MenuRow" Property="Background" Value="{DynamicResource Theme414141}" /></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="MenuRow" Property="Background" Value="{DynamicResource Theme414141}" /></Trigger><Trigger Property="IsChecked" Value="True"><Setter TargetName="CheckMark" Property="Visibility" Value="Visible" /><Setter TargetName="IconContent" Property="Visibility" Value="Collapsed" /></Trigger><Trigger Property="Tag" Value="pin-menu"><Setter TargetName="CheckMark" Property="Visibility" Value="Collapsed"/><Setter TargetName="IconContent" Property="Visibility" Value="Visible"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="ToolTip" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="{DynamicResource Theme303030}" /><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}" /><Setter Property="BorderBrush" Value="{DynamicResource Theme5A5A5A}" /><Setter Property="Padding" Value="13" /><Setter Property="FontSize" Value="13" /></Style>
+<Style TargetType="TextBox">
+ <Setter Property="Background" Value="{DynamicResource Theme252525}"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="BorderBrush" Value="{DynamicResource Theme4A4A4A}"/><Setter Property="BorderThickness" Value="1"/><Setter Property="Height" Value="36"/><Setter Property="VerticalContentAlignment" Value="Center"/><Setter Property="Padding" Value="10,0"/><Setter Property="Margin" Value="0,5,0,14"/><Setter Property="CaretBrush" Value="{DynamicResource ThemeC1C1C1}"/><Setter Property="SelectionBrush" Value="{DynamicResource DashboardAccent}"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+ <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TextBox"><Grid><Border x:Name="InputFrame" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"><ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/></Border><TextBlock x:Name="InputPlaceholder" Text="{TemplateBinding Tag}" Margin="22,0,12,0" VerticalAlignment="Center" Foreground="{DynamicResource ThemeB9B9B9}" Opacity="0.7" IsHitTestVisible="False" Visibility="Collapsed"/><Border x:Name="InputFocus" Height="2" Background="{DynamicResource DashboardAccent}" VerticalAlignment="Bottom" Margin="1,0,1,1" Visibility="Collapsed" IsHitTestVisible="False"/></Grid><ControlTemplate.Triggers><Trigger Property="Text" Value=""><Setter TargetName="InputPlaceholder" Property="Visibility" Value="Visible"/></Trigger><Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="InputPlaceholder" Property="Visibility" Value="Collapsed"/><Setter TargetName="InputFocus" Property="Visibility" Value="Visible"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".4"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+<Style.Triggers><Trigger Property="AcceptsReturn" Value="True"><Setter Property="Height" Value="Auto"/><Setter Property="VerticalContentAlignment" Value="Top"/><Setter Property="Padding" Value="10,8"/></Trigger></Style.Triggers>
+</Style>
+<Style TargetType="ComboBoxItem" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="FocusVisualStyle" Value="{x:Null}"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}" /><Setter Property="Padding" Value="17,9" /><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBoxItem"><Border x:Name="option" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="False" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><ContentPresenter /></Border><ControlTemplate.Triggers><Trigger Property="IsHighlighted" Value="True"><Setter TargetName="option" Property="Background" Value="{DynamicResource Theme414141}" /></Trigger><Trigger Property="IsSelected" Value="True"><Setter Property="FontWeight" Value="SemiBold"/><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}" /></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".4" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="ComboBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+ <Setter Property="FocusVisualStyle"><Setter.Value><Style TargetType="Control"><Setter Property="Template"><Setter.Value><ControlTemplate><Border Margin="4" BorderThickness="1" CornerRadius="4" BorderBrush="{DynamicResource Theme969696}"/></ControlTemplate></Setter.Value></Setter></Style></Setter.Value></Setter><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}" /><Setter Property="Background" Value="{DynamicResource Theme303030}" /><Setter Property="Height" Value="36"/><Setter Property="Padding" Value="10,0" /><Setter Property="Margin" Value="0,5,0,12" /><Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox"><Grid><ToggleButton Focusable="False" IsChecked="{Binding IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"><ToggleButton.Template><ControlTemplate TargetType="ToggleButton"><Border x:Name="frame" Background="{DynamicResource Theme303030}" BorderBrush="{DynamicResource Theme4A4A4A}" BorderThickness="1" CornerRadius="5" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><Path Data="M 0,0 L 5,5 L 10,0" Width="10" Height="5" Stretch="Fill" Stroke="{DynamicResource ThemeB9B9B9}" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" /></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="frame" Property="BorderBrush" Value="{DynamicResource Theme888888}" /></Trigger></ControlTemplate.Triggers></ControlTemplate></ToggleButton.Template></ToggleButton><ContentPresenter x:Name="SelectionText" Margin="22,0,29,0" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" IsHitTestVisible="False" VerticalAlignment="Center" /><Popup x:Name="PART_Popup" Placement="Bottom" PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade" HorizontalOffset="-6" VerticalOffset="-2" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><Grid Background="Transparent"><Border x:Name="DropdownSurface" Background="{DynamicResource Theme2B2B2B}" CornerRadius="10" Padding="5" MinWidth="{Binding ActualWidth,RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="320" Margin="6"><Border.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="Black" Opacity="{DynamicResource MenuShadowOpacity}" RenderingBias="Quality"/></Border.Effect><ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto"><ScrollViewer.Template><ControlTemplate TargetType="ScrollViewer">
+   <Grid Background="{TemplateBinding Background}">
+    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+    <Grid.RowDefinitions><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Margin="{TemplateBinding Padding}"
+       Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+       CanContentScroll="{TemplateBinding CanContentScroll}"/>
+    <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical" Style="{DynamicResource {x:Type ScrollBar}}"
+       Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}"
+       Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+    <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="1" Orientation="Horizontal" Style="{DynamicResource {x:Type ScrollBar}}"
+       Maximum="{TemplateBinding ScrollableWidth}" ViewportSize="{TemplateBinding ViewportWidth}"
+       Value="{Binding HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+   </Grid>
+
+  </ControlTemplate></ScrollViewer.Template><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" /></ScrollViewer></Border></Grid></Popup></Grid><ControlTemplate.Triggers><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".4" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="ScrollBar" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="MinWidth" Value="0" /><Setter Property="MinHeight" Value="0" /><Setter Property="Width" Value="17" /><Setter Property="Background" Value="{DynamicResource Theme262626}" /><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar"><Grid Background="{TemplateBinding Background}"><Track x:Name="PART_Track" IsDirectionReversed="True" Orientation="{TemplateBinding Orientation}" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"><Track.DecreaseRepeatButton><RepeatButton x:Name="PageBefore" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False" /></Track.DecreaseRepeatButton><Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb"><Border Background="{DynamicResource Theme5A5A5A}" CornerRadius="4" Margin="2" MinHeight="4" MinWidth="4" /></ControlTemplate></Thumb.Template></Thumb></Track.Thumb><Track.IncreaseRepeatButton><RepeatButton x:Name="PageAfter" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False" /></Track.IncreaseRepeatButton></Track></Grid><ControlTemplate.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False" /><Setter TargetName="PageBefore" Property="Command" Value="ScrollBar.PageLeftCommand" /><Setter TargetName="PageAfter" Property="Command" Value="ScrollBar.PageRightCommand" /></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter><Style.Triggers><Trigger Property="Orientation" Value="Horizontal"><Setter Property="Height" Value="17" /><Setter Property="Width" Value="Auto" /></Trigger></Style.Triggers></Style>
+<Style TargetType="ListBox" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><Setter Property="Background" Value="{DynamicResource Theme252525}" /><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}" /><Setter Property="BorderThickness" Value="0" /><Setter Property="Padding" Value="8" /><Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" /></Style>
+<Style TargetType="ListBoxItem">
+ <Setter Property="Padding" Value="10"/><Setter Property="Margin" Value="0,0,0,6"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+ <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem"><Grid><Border x:Name="card" Background="{DynamicResource Theme303030}" CornerRadius="7" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="False"><ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/></Border><Border x:Name="ItemFocus" Width="11" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="1,1,0,1" Visibility="Collapsed" IsHitTestVisible="False"><Path Style="{StaticResource SelectionAccentPath}"/></Border></Grid><ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="card" Property="Background" Value="{DynamicResource Theme454545}"/><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/><Setter TargetName="ItemFocus" Property="Visibility" Value="Visible"/></Trigger><MultiTrigger><MultiTrigger.Conditions><Condition Property="IsKeyboardFocusWithin" Value="True"/><Condition Property="IsSelected" Value="False"/></MultiTrigger.Conditions><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/><Setter Property="FontWeight" Value="SemiBold"/></MultiTrigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".4"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter>
+</Style>
+<Style TargetType="TextBox" x:Key="DashboardInput" BasedOn="{StaticResource {x:Type TextBox}}"/>
+
+<!-- Dashboard disclosure: retain Expander automation/keyboard behavior; replace native blue chrome. -->
+<Style TargetType="Expander">
+ <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+ <Setter Property="Foreground" Value="{DynamicResource ThemeB9B9B9}"/>
+ <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Expander">
+  <StackPanel>
+   <ToggleButton x:Name="HeaderSite" Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}"
+      IsChecked="{Binding IsExpanded,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+      Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="Stretch" FocusVisualStyle="{x:Null}" Focusable="True">
+    <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+     <Border x:Name="DisclosureFrame" Background="{DynamicResource Theme303030}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="7" Padding="10,0" Height="36" SnapsToDevicePixels="False">
+      <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="20"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+       <Path x:Name="DisclosureChevron" Data="M 1,3 L 5,7 L 9,3" Stroke="{DynamicResource ThemeB9B9B9}" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Width="10" Height="6" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+       <ContentPresenter Grid.Column="1" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+      </Grid>
+     </Border>
+     <ControlTemplate.Triggers>
+      <Trigger Property="IsChecked" Value="True"><Setter TargetName="DisclosureChevron" Property="Data" Value="M 1,7 L 5,3 L 9,7"/></Trigger>
+      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="DisclosureFrame" Property="Background" Value="{DynamicResource Theme383838}"/><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/><Setter TargetName="DisclosureChevron" Property="Stroke" Value="{DynamicResource DashboardAccent}"/></Trigger>
+      <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/><Setter TargetName="DisclosureChevron" Property="Stroke" Value="{DynamicResource DashboardAccent}"/></Trigger>
+      <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value=".4"/></Trigger>
+     </ControlTemplate.Triggers>
+    </ControlTemplate></ToggleButton.Template>
+   </ToggleButton>
+   <ContentPresenter x:Name="DisclosureBody" ContentSource="Content" Visibility="Collapsed" Margin="10,12,10,4"/>
+  </StackPanel>
+  <ControlTemplate.Triggers><Trigger Property="IsExpanded" Value="True"><Setter TargetName="DisclosureBody" Property="Visibility" Value="Visible"/></Trigger></ControlTemplate.Triggers>
+ </ControlTemplate></Setter.Value></Setter>
+</Style>
+<!-- Shared themed date controls, retaining native WPF selection and keyboard behavior. -->
+<Style x:Key="DgxCalendarDay" TargetType="CalendarDayButton"><Setter Property="MinWidth" Value="32"/><Setter Property="MinHeight" Value="30"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CalendarDayButton"><Border x:Name="Cell" Margin="2" CornerRadius="4" BorderThickness="1" BorderBrush="Transparent" Background="Transparent"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers>
+<Trigger Property="IsToday" Value="True"><Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource DashboardAccent}"/></Trigger>
+<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Cell" Property="Background" Value="{DynamicResource Theme444444}"/></Trigger>
+<Trigger Property="IsSelected" Value="True"><Setter TargetName="Cell" Property="Background" Value="{DynamicResource Theme444444}"/><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/></Trigger>
+<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Cell" Property="BorderBrush" Value="{DynamicResource DashboardAccent}"/></Trigger>
+<Trigger Property="IsInactive" Value="True"><Setter Property="Opacity" Value="0.5"/></Trigger><Trigger Property="IsBlackedOut" Value="True"><Setter Property="Opacity" Value="0.3"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.3"/></Trigger>
+</ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="DgxCalendarMonth" TargetType="CalendarButton"><Setter Property="MinHeight" Value="48"/><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CalendarButton"><Border x:Name="Cell" Margin="2" CornerRadius="4" Background="Transparent"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Cell" Property="Background" Value="{DynamicResource Theme444444}"/></Trigger><Trigger Property="HasSelectedDays" Value="True"><Setter Property="Foreground" Value="{DynamicResource DashboardAccent}"/></Trigger><Trigger Property="IsInactive" Value="True"><Setter Property="Opacity" Value="0.5"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="DgxCalendarItem" TargetType="CalendarItem"><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="CalendarItem"><Border Background="{DynamicResource Surface}" BorderBrush="{DynamicResource Theme5A5A5A}" BorderThickness="1" CornerRadius="6" Padding="8"><Grid><Grid.Resources><DataTemplate x:Key="{x:Static CalendarItem.DayTitleTemplateResourceKey}"><TextBlock Text="{Binding}" Foreground="{DynamicResource ThemeF2F2F2}" HorizontalAlignment="Center" VerticalAlignment="Center"/></DataTemplate></Grid.Resources><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+<Button x:Name="PART_PreviousButton" Content="&#x2039;" MinWidth="32" Margin="0" Padding="6" Focusable="False"/><Button x:Name="PART_HeaderButton" Grid.Column="1" Margin="4,0" Padding="6" HorizontalAlignment="Stretch" Focusable="False"/><Button x:Name="PART_NextButton" Grid.Column="2" Content="&#x203A;" MinWidth="32" Margin="0" Padding="6" Focusable="False"/>
+<Grid x:Name="PART_MonthView" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,6,0,0"><Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions></Grid><Grid x:Name="PART_YearView" Grid.Row="1" Grid.ColumnSpan="3" Visibility="Hidden" Margin="0,6,0,0"><Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions></Grid>
+</Grid></Border></ControlTemplate></Setter.Value></Setter></Style>
+<Style x:Key="DgxCalendar" TargetType="Calendar"><Setter Property="CalendarItemStyle" Value="{StaticResource DgxCalendarItem}"/><Setter Property="CalendarDayButtonStyle" Value="{StaticResource DgxCalendarDay}"/><Setter Property="CalendarButtonStyle" Value="{StaticResource DgxCalendarMonth}"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Calendar"><CalendarItem x:Name="PART_CalendarItem" Style="{TemplateBinding CalendarItemStyle}"/></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="DatePickerTextBox"><Setter Property="Foreground" Value="{DynamicResource ThemeF2F2F2}"/><Setter Property="Background" Value="{DynamicResource Theme252525}"/><Setter Property="Padding" Value="10,6"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="DatePickerTextBox"><Border Background="{TemplateBinding Background}"><ScrollViewer x:Name="PART_ContentHost" Padding="{TemplateBinding Padding}" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"/></Border></ControlTemplate></Setter.Value></Setter></Style>
+<Style TargetType="DatePicker"><Setter Property="CalendarStyle" Value="{StaticResource DgxCalendar}"/><Setter Property="Height" Value="36"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="DatePicker"><Border BorderBrush="{DynamicResource Theme5A5A5A}" BorderThickness="1" Background="{DynamicResource Theme252525}"><Grid x:Name="PART_Root"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="36"/></Grid.ColumnDefinitions><DatePickerTextBox x:Name="PART_TextBox" VerticalContentAlignment="Center"/><Button x:Name="PART_Button" Grid.Column="1" Margin="0" Padding="0" MinWidth="0" MinHeight="0" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Focusable="True" ToolTip="Choose a date" Background="Transparent" BorderThickness="0">
+<Button.Template><ControlTemplate TargetType="Button"><Border x:Name="CalendarHitArea" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="0"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers>
+<Trigger Property="IsMouseOver" Value="True"><Setter TargetName="CalendarHitArea" Property="Background" Value="{DynamicResource Theme444444}"/></Trigger>
+<Trigger Property="IsPressed" Value="True"><Setter TargetName="CalendarHitArea" Property="Background" Value="{DynamicResource Theme5A5A5A}"/></Trigger>
+<Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="CalendarHitArea" Property="BorderBrush" Value="{DynamicResource DashboardAccent}"/></Trigger>
+<Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.4"/></Trigger>
+</ControlTemplate.Triggers></ControlTemplate></Button.Template><Path HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="{DynamicResource ThemeF2F2F2}" StrokeThickness="1.5" Width="16" Height="16" Stretch="Uniform" Data="M 1,3 L 15,3 15,15 1,15 Z M 1,7 L 15,7 M 5,1 L 5,5 M 11,1 L 11,5"/></Button><Popup x:Name="PART_Popup" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" Focusable="False"/></Grid></Border></ControlTemplate></Setter.Value></Setter></Style>
+</ResourceDictionary>

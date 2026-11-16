@@ -59,6 +59,8 @@ internal class RoundedButton:Button
 {
     bool hovering,pressed;
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Color? SelectedAccent { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Color BorderColor {get;set;}=Color.FromArgb(210,215,222);
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal Color DisabledTextColor {get;set;}=Color.Gray;
@@ -77,13 +79,75 @@ internal class RoundedButton:Button
         Color textColor=Enabled?ForeColor:DisabledTextColor;
         if(Enabled&&hovering)fillColor=pressed?ControlPaint.Dark(fillColor,.08f):ControlPaint.Light(fillColor,.12f);
         e.Graphics.SmoothingMode=SmoothingMode.AntiAlias;
-        using var shape=WindowStyle.Round(new RectangleF(.5f,.5f,Width-1,Height-1),4*DeviceDpi/96f);
+        using var shape=WindowStyle.Round(new RectangleF(.5f,.5f,Width-1,Height-1),7*DeviceDpi/96f);
         using var brush=new SolidBrush(fillColor);e.Graphics.FillPath(brush,shape);
-        using var line=new Pen(SystemInformation.HighContrast?SystemColors.WindowText:BorderColor);e.Graphics.DrawPath(line,shape);
+        if(SelectedAccent is Color accent)
+        {
+            using var marker=new Pen(accent,2*DeviceDpi/96f);
+            float x=2,y=2,bottom=Height-2,diameter=10;
+            e.Graphics.DrawArc(marker,x,y,diameter,diameter,180,90);
+            e.Graphics.DrawLine(marker,x,y+5,x,bottom-5);
+            e.Graphics.DrawArc(marker,x,bottom-diameter,diameter,diameter,90,90);
+            e.Graphics.DrawLine(marker,x+5,y,x+10,y);
+            e.Graphics.DrawLine(marker,x+5,bottom,x+10,bottom);
+        }
+        if(SystemInformation.HighContrast){using var line=new Pen(SystemColors.WindowText);e.Graphics.DrawPath(line,shape);}
         var textBounds=Rectangle.FromLTRB(Padding.Left,Padding.Top,Width-Padding.Right,Height-Padding.Bottom);
         var alignment=TextAlign is ContentAlignment.MiddleLeft?TextFormatFlags.Left:TextFormatFlags.HorizontalCenter;
         TextRenderer.DrawText(e.Graphics,Text,Font,textBounds,textColor,alignment|TextFormatFlags.VerticalCenter|TextFormatFlags.EndEllipsis);
         if(Focused&&ShowFocusCues)ControlPaint.DrawFocusRectangle(e.Graphics,Rectangle.Inflate(ClientRectangle,-4,-4),textColor,fillColor);
+    }
+}
+
+internal sealed class ThemeCheckBox : CheckBox
+{
+    bool hovering;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Color IndicatorFill { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Color IndicatorBorder { get; set; }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal Color HoverFill { get; set; }
+
+    public ThemeCheckBox()
+    {
+        SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+    }
+
+    protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); hovering = true; Invalidate(); }
+    protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hovering = false; Invalidate(); }
+    protected override void OnCheckStateChanged(EventArgs e) { base.OnCheckStateChanged(e); Invalidate(); }
+    protected override void OnGotFocus(EventArgs e) { base.OnGotFocus(e); Invalidate(); }
+    protected override void OnLostFocus(EventArgs e) { base.OnLostFocus(e); Invalidate(); }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        float scale = DeviceDpi / 96f;
+        int size = (int)Math.Round(16 * scale);
+        int left = Text.Length == 0 ? (Width - size) / 2 : 0;
+        int top = (Height - size) / 2;
+        bool highContrast = SystemInformation.HighContrast;
+        Color ink = !Enabled ? SystemColors.GrayText : highContrast ? SystemColors.WindowText : ForeColor;
+        e.Graphics.Clear(BackColor);
+        using var fill = new SolidBrush(highContrast ? SystemColors.Window : Enabled && hovering ? HoverFill : IndicatorFill);
+        using var outline = new Pen(highContrast ? SystemColors.WindowText : IndicatorBorder, scale);
+        e.Graphics.FillRectangle(fill, left, top, size, size);
+        e.Graphics.DrawRectangle(outline, left + scale / 2, top + scale / 2, size - scale, size - scale);
+        if (CheckState != CheckState.Unchecked)
+        {
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            using var mark = new Pen(ink, 1.5f * scale) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round };
+            if (CheckState == CheckState.Indeterminate)
+                e.Graphics.DrawLine(mark, left + 4 * scale, top + 8 * scale, left + 12 * scale, top + 8 * scale);
+            else
+                e.Graphics.DrawLines(mark, new PointF[] { new(left + 3 * scale, top + 8 * scale), new(left + 6.5f * scale, top + 11.5f * scale), new(left + 13 * scale, top + 4.5f * scale) });
+        }
+        int labelStart = left + size + (int)Math.Round(8 * scale);
+        if (Text.Length > 0)
+            TextRenderer.DrawText(e.Graphics, Text, Font, new Rectangle(labelStart, 0, Math.Max(0, Width - labelStart), Height), ink,
+                TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis | TextFormatFlags.SingleLine);
+        if (Focused && ShowFocusCues)
+            ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(ClientRectangle, -1, -1), ink, BackColor);
     }
 }
 
@@ -93,6 +157,7 @@ internal sealed class EditorScrollArea:Panel
     readonly Panel viewport=new() {Dock=DockStyle.Fill};
     readonly EditorScrollThumb scroll=new() {Dock=DockStyle.Right,Width=18};
     Control? content;bool arranging;int offset;
+    internal void ApplyBackground(Color background) { viewport.BackColor = background; scroll.BackColor = background; }
     internal int ScrollOffset=>offset;
     internal int MaximumOffset=>Math.Max(0,(content?.Height??0)-viewport.ClientSize.Height);
     internal Rectangle ContentViewport=>viewport.Bounds;
@@ -102,6 +167,7 @@ internal sealed class EditorScrollArea:Panel
         Controls.Add(viewport);Controls.Add(scroll);
         scroll.RequestScroll+=value=>SetOffset(value);
         viewport.SizeChanged+=(_,_)=>ArrangeContent();
+        viewport.MouseWheel+=(_,e)=>OnMouseWheel(e);
     }
     internal void SetContent(Control value)
     {
@@ -340,6 +406,7 @@ internal sealed class AppMenuRenderer(ProfessionalColorTable colors,Color accent
         foreach(ToolStripItem item in strip.Items)
         {
             if(item is ToolStripSeparator)continue;
+            if(item is ToolStripButton { Name: "OnTop" }){item.Size=new Size(Scale(36),Scale(36));item.Margin=new Padding(0,0,Scale(6),0);continue;}
             item.Padding=strip is ToolStripDropDown?new Padding(Scale(12),Scale(9),Scale(20),Scale(9)):new Padding(Scale(7),Scale(3),Scale(7),Scale(3));
             if(item is ToolStripMenuItem entry&&entry.HasDropDownItems)ApplySpacing(entry.DropDown);
         }
@@ -401,6 +468,31 @@ internal sealed class AppMenuRenderer(ProfessionalColorTable colors,Color accent
         int size=(int)Math.Round(18*scale);
         return new Rectangle((int)Math.Round(14*scale),(item.Height-size)/2,size,size);
     }
+    protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
+    {
+        if (e.Item is not ToolStripButton { Name: "OnTop" } pin)
+        {
+            base.OnRenderButtonBackground(e);
+            return;
+        }
+
+        float scale = (e.ToolStrip?.DeviceDpi ?? 96) / 96f;
+        var state = e.Graphics.Save();
+        e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        using var background = WindowStyle.Round(new RectangleF(1, 1, pin.Width - 2, pin.Height - 2), 7 * scale);
+        bool highContrast = SystemInformation.HighContrast;
+        using var fill = new SolidBrush(highContrast ? SystemColors.Control : pin.Selected ? ColorTable.MenuItemSelected : ControlPaint.Light(pin.BackColor, .09f));
+        e.Graphics.FillPath(fill, background);
+        using var glyph = MenuGlyphs.Pin(pin.Checked);
+        using var transform = new Matrix(scale, 0, 0, scale, (pin.Width - 24 * scale) / 2, (pin.Height - 24 * scale) / 2);
+        glyph.Transform(transform);
+        using var ink = new SolidBrush(highContrast ? SystemColors.ControlText : pin.Checked ? accent : pin.ForeColor);
+        e.Graphics.FillPath(ink, glyph);
+        if (pin.Selected && (e.ToolStrip?.ContainsFocus ?? false))
+            ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(new Rectangle(Point.Empty, pin.Size), -2, -2));
+        e.Graphics.Restore(state);
+    }
+
     protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
     {
         if(e.Image is null)return;

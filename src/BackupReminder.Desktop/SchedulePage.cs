@@ -1,0 +1,41 @@
+using W=System.Windows;
+using C=System.Windows.Controls;
+using System.Globalization;
+namespace BackupReminder;
+internal sealed partial class ReviewWindow
+{
+ C.StackPanel BuildReminderPage(W.Window owner,out Func<ChecklistSettings> read,string applyAction="Save")
+ {
+  var draft=profile.CopySettings();var saved=draft.Schedule??new ReminderSchedule();
+  var panel=new C.StackPanel{Margin=new W.Thickness(0,0,14,0)};Heading(panel,"Reminder schedule");
+  panel.Children.Add(WorkText("Choose when Windows should remind you to open your backup checklist."));
+  var enabled=Option(panel,"Remind me to back up",saved.Enabled);
+  var timing=new C.StackPanel();panel.Children.Add(timing);
+  C.ComboBox Choice(C.Panel parent,string label,IEnumerable<string> values,string selected,double width){parent.Children.Add(WorkText(label));var box=new C.ComboBox{ItemsSource=values,SelectedItem=selected,Width=width,HorizontalAlignment=W.HorizontalAlignment.Left};System.Windows.Automation.AutomationProperties.SetName(box,label);parent.Children.Add(box);return box;}
+  var cadence=new C.WrapPanel();timing.Children.Add(cadence);var recurrence=new C.StackPanel();cadence.Children.Add(recurrence);var repeat=Choice(recurrence,"How often",new[]{"Every month","Every few days"},saved.Mode=="Monthly"?"Every month":"Every few days",240);
+  var monthly=new C.StackPanel{Width=210,Margin=new W.Thickness(16,0,0,0)};cadence.Children.Add(monthly);
+  var day=Choice(monthly,"Day of the month",Enumerable.Range(1,31).Select(x=>x.ToString()),saved.DayOfMonth.ToString(),88);
+  var shortMonth=WorkText("");monthly.Children.Add(shortMonth);
+  var intervalPanel=new C.StackPanel();timing.Children.Add(intervalPanel);
+  var interval=Field(intervalPanel,"Every (days)",saved.IntervalDays.ToString());interval.Width=110;interval.HorizontalAlignment=W.HorizontalAlignment.Left;
+  intervalPanel.Children.Add(WorkText("Starting on (MM/DD/YYYY)"));
+  var start=new C.DatePicker{SelectedDate=DateTime.ParseExact(saved.StartDate,"yyyy-MM-dd",CultureInfo.InvariantCulture),SelectedDateFormat=C.DatePickerFormat.Short,Language=System.Windows.Markup.XmlLanguage.GetLanguage("en-US"),Width=240,HorizontalAlignment=W.HorizontalAlignment.Left,Margin=new W.Thickness(0,5,0,14)};
+  System.Windows.Automation.AutomationProperties.SetName(start,"Starting on (MM/DD/YYYY)");Resource(start,C.Control.BackgroundProperty,"Theme252525");Resource(start,C.Control.ForegroundProperty,"ThemeF2F2F2");intervalPanel.Children.Add(start);
+  timing.Children.Add(WorkText("At (your local time)"));var clock=new C.WrapPanel();timing.Children.Add(clock);var time=TimeOnly.ParseExact(saved.TimeOfDay,"HH:mm",CultureInfo.InvariantCulture);
+  C.ComboBox ClockPart(string label,IEnumerable<string> values,string selected,double width){var box=new C.ComboBox{ItemsSource=values,SelectedItem=selected,Width=width,Margin=new W.Thickness(0,5,8,14)};System.Windows.Automation.AutomationProperties.SetName(box,label);clock.Children.Add(box);return box;}
+  var hour=ClockPart("Hour",Enumerable.Range(1,12).Select(x=>x.ToString()),(time.Hour%12==0?12:time.Hour%12).ToString(),80);
+  var minute=ClockPart("Minute",Enumerable.Range(0,60).Select(x=>x.ToString("00")),time.Minute.ToString("00"),80);
+  var period=ClockPart("AM or PM",new[]{"AM","PM"},time.Hour<12?"AM":"PM",90);
+  var summary=WorkText("",true);var summaryCard=new C.Border{Padding=new W.Thickness(14),CornerRadius=new W.CornerRadius(9),Margin=new W.Thickness(0,4,0,16),Child=summary};Resource(summaryCard,C.Border.BackgroundProperty,"Surface");panel.Children.Add(summaryCard);
+  
+  panel.Children.Add(WorkText("Sound"));var soundRow=new C.WrapPanel{Margin=new W.Thickness(0,5,0,12)};panel.Children.Add(soundRow);var soundMode=new C.ComboBox{ItemsSource=new[]{"No sound","Windows default","Custom WAV"},SelectedItem=!draft.PlayReminderSound?"No sound":string.IsNullOrWhiteSpace(draft.ReminderSoundPath)?"Windows default":"Custom WAV",Width=240,Margin=new W.Thickness(0)};System.Windows.Automation.AutomationProperties.SetName(soundMode,"Sound");soundRow.Children.Add(soundMode);
+  var custom=new C.DockPanel{Margin=new W.Thickness(0,4,0,0)};panel.Children.Add(custom);var soundActions=new C.WrapPanel{VerticalAlignment=W.VerticalAlignment.Center};C.DockPanel.SetDock(soundActions,C.Dock.Right);custom.Children.Add(soundActions);var sound=new C.TextBox{Text=draft.ReminderSoundPath??"",Margin=new W.Thickness(0,0,12,0)};System.Windows.Automation.AutomationProperties.SetName(sound,"WAV file");custom.Children.Add(sound);
+  soundActions.Children.Add(Button("Browse…",()=>{var picker=SoundPicker(sound.Text);if(picker.ShowDialog(owner)==true)sound.Text=picker.FileName;}));
+  var preview=Button("Preview sound",()=>{if((string)soundMode.SelectedItem=="Custom WAV"){if(string.IsNullOrWhiteSpace(sound.Text))throw new InvalidDataException("Choose a WAV file first.");var value=profile.ResolveAsset(sound.Text);_=ProfileAssets.ReadAsset(value,true);using var player=new System.Media.SoundPlayer(value);player.PlaySync();}else System.Media.SystemSounds.Asterisk.Play();});preview.HorizontalAlignment=W.HorizontalAlignment.Left;preview.Margin=new W.Thickness(12,0,0,0);preview.VerticalAlignment=W.VerticalAlignment.Top;soundRow.Children.Add(preview);
+  ReminderSchedule ReadSchedule(){var result=System.Text.Json.JsonSerializer.Deserialize<ReminderSchedule>(System.Text.Json.JsonSerializer.Serialize(saved,Profile.Json),Profile.Json)!;result.Enabled=enabled.IsChecked==true;result.Mode=repeat.SelectedIndex==0?"Monthly":"Interval";result.DayOfMonth=int.Parse((string)day.SelectedItem);if(result.Mode=="Interval"){if(!int.TryParse(interval.Text,out int days)||days<1||days>365)throw new InvalidDataException("Choose an interval from 1 to 365 days.");result.IntervalDays=days;result.StartDate=(start.SelectedDate??throw new InvalidDataException("Choose a starting date.")).ToString("yyyy-MM-dd",CultureInfo.InvariantCulture);}result.TimeOfDay=((int.Parse((string)hour.SelectedItem)%12)+(period.SelectedIndex==1?12:0)).ToString("00")+":"+minute.SelectedItem;result.Validate();return result;}
+  read=()=>{var next=profile.CopySettings();next.Schedule=ReadSchedule();next.PlayReminderSound=soundMode.SelectedIndex!=0;if(soundMode.SelectedIndex==2){if(string.IsNullOrWhiteSpace(sound.Text))throw new InvalidDataException("Choose a WAV file or select Windows default.");next.ReminderSoundPath=sound.Text;}else if(soundMode.SelectedIndex==1)next.ReminderSoundPath=null;return next;};
+  void Refresh(){bool isMonthly=repeat.SelectedIndex==0;monthly.Visibility=isMonthly?W.Visibility.Visible:W.Visibility.Collapsed;intervalPanel.Visibility=isMonthly?W.Visibility.Collapsed:W.Visibility.Visible;custom.Visibility=soundMode.SelectedIndex==2?W.Visibility.Visible:W.Visibility.Collapsed;preview.Visibility=soundMode.SelectedIndex==0?W.Visibility.Collapsed:W.Visibility.Visible;int selectedDay=int.Parse((string)day.SelectedItem);shortMonth.Visibility=selectedDay>=29?W.Visibility.Visible:W.Visibility.Collapsed;shortMonth.Text=selectedDay==29?"In February, this uses the last day of the month (February 29 in leap years).":"In shorter months, this uses the last day of the month.";try{var value=ReadSchedule();summary.Text=ScheduleDescription(value)+(value.Enabled?"\n"+applyAction+" applies this reminder to Windows for this profile.":"\nReminders are off. Your timing choices are kept.");}catch(InvalidDataException error){summary.Text=error.Message;}}
+  repeat.SelectionChanged+=(_,_)=>Refresh();day.SelectionChanged+=(_,_)=>Refresh();hour.SelectionChanged+=(_,_)=>Refresh();minute.SelectionChanged+=(_,_)=>Refresh();period.SelectionChanged+=(_,_)=>Refresh();soundMode.SelectionChanged+=(_,_)=>Refresh();interval.TextChanged+=(_,_)=>Refresh();start.SelectedDateChanged+=(_,_)=>Refresh();enabled.Checked+=(_,_)=>Refresh();enabled.Unchecked+=(_,_)=>Refresh();Refresh();return panel;
+ }
+ static string ScheduleDescription(ReminderSchedule value){string time=TimeOnly.ParseExact(value.TimeOfDay,"HH:mm",CultureInfo.InvariantCulture).ToString("h:mm tt",CultureInfo.InvariantCulture);return value.Mode=="Monthly"?$"Every month on day {value.DayOfMonth} at {time}.":$"Every {value.IntervalDays} {(value.IntervalDays==1?"day":"days")} at {time}, starting {DateTime.ParseExact(value.StartDate,"yyyy-MM-dd",CultureInfo.InvariantCulture):MM/dd/yyyy}.";}
+}

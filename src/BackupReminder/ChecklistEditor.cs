@@ -152,10 +152,10 @@ internal sealed partial class MainWindow
         more.Click+=(_,_)=>{advanced.Visible=!advanced.Visible;more.Text=advanced.Visible?"Fewer options":"More options";fields.PerformLayout();};
         var footer = new Panel { Dock=DockStyle.Fill, Tag="window", Margin=Padding.Empty };
         var summary = new Label { Tag="muted", AutoSize=true, Location=new Point(2,28) };
-        var cancel=MakeButton("Cancel");cancel.Name="CancelEditor";cancel.SetBounds(0,20,110,38);cancel.Click+=(_,_)=>dialog.Close();
-        var save=MakeButton("Save changes");save.Name="SaveChecklist";save.Tag="primary";save.SetBounds(0,20,142,38);
+        var cancel=MakeButton("Cancel");cancel.Name="CancelEditor";cancel.SetBounds(0,20,142,36);cancel.Click+=(_,_)=>dialog.Close();
+        var save=MakeButton("Save changes");save.Name="SaveChecklist";save.Tag="primary";save.SetBounds(0,20,142,36);
         footer.Controls.AddRange([summary,cancel,save]);
-        footer.SizeChanged+=(_,_)=>{save.Left=footer.ClientSize.Width-save.Width;cancel.Left=save.Left-cancel.Width-10;};
+        footer.SizeChanged+=(_,_)=>{save.Left=footer.ClientSize.Width-save.Width;cancel.Left=save.Left-cancel.Width-8;};
         page.Controls.Add(footer,0,2);dialog.CancelButton=cancel;
         EditSession? edits=null;
         bool isCategory=false,loading=false;
@@ -270,7 +270,7 @@ internal sealed partial class MainWindow
             {
                 if(draft.Items.Any(x=>string.Equals(x.Group,selected.Id,StringComparison.OrdinalIgnoreCase)))
                 {
-                    if(MessageBox.Show(dialog,"Remove this group? Its tasks will stay in the checklist as individual tasks.","Remove group",MessageBoxButtons.YesNo,MessageBoxIcon.Question)!=DialogResult.Yes)return;
+                    if(ShowNotice(dialog,"Remove this group? Its tasks will stay in the checklist as individual tasks.","Remove group",MessageBoxButtons.YesNo,MessageBoxIcon.Question)!=DialogResult.Yes)return;
                     foreach(var item in draft.Items.Where(x=>string.Equals(x.Group,selected.Id,StringComparison.OrdinalIgnoreCase)))item.Group=null;
                 }
                 draft.Groups.Remove(selected);
@@ -300,7 +300,7 @@ internal sealed partial class MainWindow
                 string? selectedId=selected?.Id;NormalizeGroups(draft);profile.SaveSettings(draft);
                 draft=profile.CopySettings();RefreshTree(selectedId);ReloadChecklist();return true;
             }
-            catch(Exception error){if(options.TestDirectory is not null)throw;MessageBox.Show(dialog,error.Message,"Could not save checklist",MessageBoxButtons.OK,MessageBoxIcon.Warning);return false;}
+            catch(Exception error){if(options.TestDirectory is not null)throw;ShowNotice(dialog,error.Message,"Could not save checklist",MessageBoxButtons.OK,MessageBoxIcon.Warning);return false;}
         }
         tree.DrawNode+=(_,e)=>
         {
